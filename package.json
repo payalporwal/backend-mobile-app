@@ -1,0 +1,32 @@
+{
+  "name": "pace_server_api",
+  "version": "1.0.0",
+  "description": "mental health application - backend",
+  "main": "app.js",
+  "scripts": {
+    "test": "NODE_ENV=test nodemon app.js",
+    "start": "NODE_ENV=production nodemon app.js",
+    "dev": "NODE_ENV=development nodemon app.js"
+  },
+  "keywords": [
+    "mental",
+    "health"
+  ],
+  "author": "Payal Porwal",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.8.1",
+    "mongoose-unique-validator": "^3.1.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
