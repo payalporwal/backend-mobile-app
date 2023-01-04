@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const userRouter = require('./routes/auth-routes');
 const processRouter = require('./routes/process-routes');
 const tokenRouter = require('./routes/token-routes');
+const otpRouter = require('./routes/otp-route');
 const HttpError = require('./utils/http-error');
 
 const config =  require('./config.js');
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 app.use('/api/users',userRouter);
 app.use('/api/process',processRouter);
 app.use('/api/token',tokenRouter);
+app.use('/api/otp',otpRouter);
 
 app.use((req, res, next) => {
     const error = new HttpError('Could not find this route.', false, 404);

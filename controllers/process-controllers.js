@@ -34,7 +34,7 @@ const getUserbyId = async (req, res, next) => {
 
 const getUserbyEmail = async (req, res, next) => {
     try{
-        const user = await User.find({ email: `${req.userData.email}` }).select("-password");
+        const user = await User.findOne({ email: `${req.userData.email}` }).select("-password");
         if(!user) {
             const error = new HttpError(
                 'Could not find user for the provided email.',
@@ -46,7 +46,7 @@ const getUserbyEmail = async (req, res, next) => {
         res.status(200).json({
             message: `Access as ${user.username}`,
             success: true,
-            user
+            user:user
         });
     } catch (err) {
         const error = new HttpError(
@@ -91,11 +91,11 @@ const updateUser = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
     try{
         await User.findByIdAndDelete(req.userData.userId);
-
+        res.status(200).json({message: 'Deleted User', success: true});
     } catch (err) {
+        console.log(err);
         return next(new HttpError('Something went wrong, Could not Delete!', false, 500));
     }
-    res.status(200).json({message: 'Deleted User', success: true});
 };
 
 

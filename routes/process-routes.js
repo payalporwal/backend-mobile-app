@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.use(checkAuth);
 
-router.get('/email', check('email').isEmail(), checkAuth, processControllers.getUserbyEmail);
+router.get('/email', check('email').isEmail(), processControllers.getUserbyEmail);
 
 router.get('/dashboard', processControllers.getUserbyId);
 
@@ -19,7 +19,7 @@ router.patch('/update', [
     check('gender').not().isEmpty()
 ], processControllers.updateUser);
 
-router.delete('/remove', check('token').not().isEmpty, processControllers.deleteUser);
+router.delete('/remove', processControllers.deleteUser);
 
 
 module.exports = router;
