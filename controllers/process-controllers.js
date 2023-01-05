@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const UserToken = require('../models/token');
 
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
@@ -90,7 +91,8 @@ const updateUser = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
     try{
-        await User.findByIdAndDelete(req.userData.userId);
+        await User.findByIdAndUpdate(req.userData.userId, {active: false});
+        await UserToken.findOneAndDelete({userId: req.userData.userId});
         res.status(200).json({message: 'Deleted User', success: true});
     } catch (err) {
         console.log(err);

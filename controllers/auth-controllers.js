@@ -21,12 +21,16 @@ const register = async (req, res, next) => {
       const existingUser = await User.findOne({ email: email });
   
       if (existingUser) {
-        const error = new HttpError(
-          'User exists already, please login instead.',
-          false,
-          422
-        );
-        return next(error);
+        if(existingUser.active){
+          const error = new HttpError(
+            'User exists already, please login instead.',
+            false,
+            422
+          );
+          return next(error);
+        } else {
+          await existingUser.remove();
+        }
       }
 
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -39,7 +43,7 @@ const register = async (req, res, next) => {
         age
       });
 
-      await createdUser.save();
+      createdUser.save();
 
       res.status(201).json({
         message: 'User Register Successfully!',
@@ -63,7 +67,7 @@ const login = async (req, res, next) => {
 
       const existingUser = await User.findOne({ email: email });
     
-      if (!existingUser) {
+      if (!existingUser || !existingUser.active) {
         const error = new HttpError(
           'User does not exist, Register yourself',
           false,

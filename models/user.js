@@ -18,6 +18,7 @@ const userSchema = mongoose.Schema({
     },
     phone: {
         type: Number,
+        unique: true,
     },
     gender: {
         type: String,
@@ -26,6 +27,11 @@ const userSchema = mongoose.Schema({
     age: {
         type: Number,
         required: true,
+    },
+    active: {
+        type: Boolean,
+        require: true,
+        default: true
     }
 },
 {
