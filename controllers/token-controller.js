@@ -9,24 +9,22 @@ require('dotenv').config();
 
 const getnewToken = async (req, res, next) => {
     try{
-        if(!req.body.token){
-            return next(new HttpError('Provide valid token', false, 422));
+        const tokenData = await UserToken.findOne({userId: req.params.uid});
+        if(!tokenData){
+            return next(new HttpError('Invalid Access, Login Again', false, 404));
         }
-        const token = UserToken.findOne({token: req.body.token});
-        if(!token){
-            return next(new HttpError('Invalid Access, Provide valid Token', false, 404));
-        }
-        const decodedToken = jwt.verify(req.body.token, process.env.REFRESH_TOKEN_PRIVATE_KEY);
+        const decodedToken = jwt.verify(tokenData.token, process.env.REFRESH_TOKEN_PRIVATE_KEY);
         
         const thisUser = await User.findOne({id: decodedToken.userId});
         if(!thisUser) {
             return next(new HttpError('Cannot Access, no user found', false, 403));
         }
-        const { accessToken, refreshToken } = await generateTokens(thisUser);
+        const accessToken = await generateTokens(thisUser);
 
-        res.header('Authentication', 'Bearer ' + accessToken).status(201).json({
-            message: "Access token created successfully",
+        res.status(201).json({
+            message: "Token created successfully",
             success: true,
+            token: accessToken
         });
     } catch(err){
         console.log(err);
@@ -38,11 +36,7 @@ const getnewToken = async (req, res, next) => {
  
  const logoutUser = async(req, res, next) => {
      try {
-        if(!req.body.token){
-            return next(new HttpError('Provide valid token', false, 422));
-        }
- 
-         const userToken = await UserToken.findOne({ token: req.body.token });
+         const userToken = await UserToken.findOne({ userId: req.params.uid });
          if (!userToken)
              return res
                  .status(200)

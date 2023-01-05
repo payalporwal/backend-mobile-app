@@ -4,8 +4,8 @@ const tokenControllers = require('../controllers/token-controller');
 
 const router = express.Router();
 
-router.post('/refresh', tokenControllers.getnewToken);
+router.post('/refresh/:uid', tokenControllers.getnewToken);
 
-router.delete('/logout', tokenControllers.logoutUser);
+router.delete('/logout/:uid', tokenControllers.logoutUser);
 
 module.exports = router;

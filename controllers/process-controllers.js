@@ -21,7 +21,12 @@ const getUserbyId = async (req, res, next) => {
         res.status(200).json({
             message: `Access as ${user.username}`,
             success: true,
-            user
+            id: user.id,
+            name: user.username,
+            email: user.email,
+            phone: user.phone,
+            age: user.age,
+            gender: user.gender
         });
     } catch (err) {
         const error = new HttpError(
@@ -47,7 +52,12 @@ const getUserbyEmail = async (req, res, next) => {
         res.status(200).json({
             message: `Access as ${user.username}`,
             success: true,
-            user:user
+            id: user.id,
+            name: user.username,
+            email: user.email,
+            phone: user.phone,
+            age: user.age,
+            gender: user.gender
         });
     } catch (err) {
         const error = new HttpError(

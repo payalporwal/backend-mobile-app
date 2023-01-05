@@ -23,7 +23,7 @@ const generateTokens = async (user) => {
 		if (userToken) await userToken.remove();
 
 		await new UserToken({ userId: user.id, token: refreshToken }).save();
-		return {accessToken, refreshToken};
+		return accessToken;
 	} catch (err) {
 		return next(new HttpError('Something went wrong, Token not created', false, 400));
 	}

@@ -96,13 +96,13 @@ const login = async (req, res, next) => {
         );
         return next(error);
       }
-      const { accessToken, refreshToken } = await generateTokens(existingUser);
+      const accessToken = await generateTokens(existingUser);
     
   
-      res.header('Authorization', 'Bearer '+ accessToken).json({ 
+      res.json({ 
         message: 'Logged In Successfully!',
         success: true,
-        user: existingUser
+        token: accessToken
       });
       
     } catch (err) {
