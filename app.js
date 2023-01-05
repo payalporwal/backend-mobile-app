@@ -14,7 +14,6 @@ console.log(`Node Environment is ${process.env.NODE_ENV}`);
 
 const app = express();
 
-
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
