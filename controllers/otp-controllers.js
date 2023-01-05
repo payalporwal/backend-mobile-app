@@ -108,6 +108,7 @@ const verifyOtp = async (req, res, next) =>{
 
         //validate for email and otp
         if(email === otpdata.email && valid){
+            await otpdata.remove();
             res.status(200).json({
                 message: 'OTP Verified',
                 success: true
