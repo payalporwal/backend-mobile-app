@@ -19,6 +19,11 @@ router.patch('/update', [
     check('gender').not().isEmpty()
 ], processControllers.updateUser);
 
+router.patch('/changePassword', [
+    check('oldpassword').isLength({min:6}),
+    check('newpassword').isLength({min:6}),
+], processControllers.changePassword);
+
 router.delete('/remove', processControllers.deleteUser);
 
 

@@ -81,7 +81,7 @@ const login = async (req, res, next) => {
         isValidPassword = await bcrypt.compare(password, existingUser.password);
       } catch (err) {
         const error = new HttpError(
-          'Could not log you in, please check your credentials and try again.',
+          'Couldn\'t log you in, please check your credentials and try again.',
           false,
           500
         );
@@ -116,5 +116,36 @@ const login = async (req, res, next) => {
     }
 };
 
+const forgetPassword = async (req, res, next) => {
+  try{
+      const errors = validationResult(req);
+          if (!errors.isEmpty()) {
+          return next(
+              new HttpError('Invalid inputs passed, please check your data.', false, 422)
+          );
+      }
+
+      const {email, password} = req.body;
+      
+      const user = await User.findOne({email: email});
+      if(!user || !user.active){
+        return next(
+          new HttpError('User doesn\'t exists, please check your data.', false, 422)
+      );
+      }
+      const salt = await bcrypt.genSalt(Number(process.env.SALT));
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      user.password = hashedPassword;
+      await user.save();
+
+      res.status(200).json({message: 'Password changes successfully!', success: true});
+  } catch(err){
+      console.log(err);
+      return next(new HttpError('Something went wrong, Couldn\'t Change Password!', false, 500));
+  }
+};
+
 exports.register = register;
 exports.login = login;
+exports.forgetPassword = forgetPassword;

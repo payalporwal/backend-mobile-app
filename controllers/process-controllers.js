@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
-const UserToken = require('../models/token');
+const bcrypt = require('bcryptjs');
 
+const UserToken = require('../models/token');
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
 
@@ -11,7 +12,7 @@ const getUserbyId = async (req, res, next) => {
     
         if(!user) {
             const error = new HttpError(
-                'Could not find user for the provided id.',
+                'Couldn\'t find user for the provided id.',
                 false,
                 404
             );
@@ -30,7 +31,7 @@ const getUserbyId = async (req, res, next) => {
         });
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, could not find user profile. Try Again!',
+            'Something went wrong, Couldn\'t find user profile. Try Again!',
             false,
             500
         );
@@ -43,7 +44,7 @@ const getUserbyEmail = async (req, res, next) => {
         const user = await User.findOne({ email: `${req.userData.email}` }).select("-password");
         if(!user) {
             const error = new HttpError(
-                'Could not find user for the provided email.',
+                'Couldn\'t find user for the provided email.',
                 false,
                 404
             );
@@ -61,7 +62,7 @@ const getUserbyEmail = async (req, res, next) => {
         });
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, could not find user profile. Try Again!',
+            'Something went wrong, Couldn\'t find user profile. Try Again!',
             false,
             500
         );
@@ -92,10 +93,58 @@ const updateUser = async (req, res, next) => {
         res.status(200).json({message: 'Updation Completed', success: true});
     } catch (err) {
         const error = new HttpError(
-        'Something went wrong, could not update profile.', false,
+        'Something went wrong, Couldn\'t update profile.', false,
         500
         );
         return next(error);
+    }
+};
+
+const changePassword = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+            return next(
+                new HttpError('Invalid inputs passed, please check your data.', false, 422)
+            );
+        }
+
+        const {oldpassword, newpassword} = req.body;
+        const userId = req.userData.userId;
+        const user = await User.findById(userId);
+
+        let isValidPassword = false;
+        try{
+            isValidPassword = await bcrypt.compare(oldpassword, user.password);
+        } catch (err) {
+            console.log(err);
+            const error = new HttpError(
+            'Couldn\'t change password, Retry!',
+            false,
+            500
+            );
+            return next(error);
+        }
+    
+        if (!isValidPassword) {
+            const error = new HttpError(
+            'Invalid credentials, Enter Correct Password',
+            false,
+            403
+            );
+            return next(error);
+        }
+
+        const salt = await bcrypt.genSalt(Number(process.env.SALT));
+        const hashedPassword = await bcrypt.hash(newpassword, salt);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({message: 'Password changes successfully!', success: true});
+    } catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong, Couldn\'t Change Password!', false, 500));
     }
 };
 
@@ -106,7 +155,7 @@ const deleteUser = async (req, res, next) => {
         res.status(200).json({message: 'Deleted User', success: true});
     } catch (err) {
         console.log(err);
-        return next(new HttpError('Something went wrong, Could not Delete!', false, 500));
+        return next(new HttpError('Something went wrong, Couldn\'t Delete!', false, 500));
     }
 };
 
@@ -115,3 +164,4 @@ exports.getUserbyId = getUserbyId;
 exports.getUserbyEmail = getUserbyEmail;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
+exports.changePassword = changePassword;

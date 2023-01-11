@@ -16,6 +16,10 @@ const OTPschema = new Schema({
         required: true,
         unique: true,
     },
+	otptype: {
+		type: String,
+		required: true
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now,

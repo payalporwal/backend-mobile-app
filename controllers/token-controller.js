@@ -17,7 +17,7 @@ const getnewToken = async (req, res, next) => {
         
         const thisUser = await User.findOne({id: decodedToken.userId});
         if(!thisUser) {
-            return next(new HttpError('Cannot Access, no user found', false, 403));
+            return next(new HttpError('Can\'t Access, no user found', false, 403));
         }
         const accessToken = await generateTokens(thisUser);
 
@@ -29,7 +29,7 @@ const getnewToken = async (req, res, next) => {
     } catch(err){
         console.log(err);
         return next(
-            new HttpError('Could not update token, Try again', false, 500)
+            new HttpError('Couldn\'t update token, Try again', false, 500)
         );
     }
  };
@@ -46,7 +46,7 @@ const getnewToken = async (req, res, next) => {
          res.status(200).json({ message: "Logged Out Sucessfully" , success: true});
      } catch (err) {
          console.log(err);
-         return next(new HttpError('Something went wrong, Could not LogOut', false, 500));
+         return next(new HttpError('Something went wrong, Couldn\'t LogOut', false, 500));
      }
  };
  

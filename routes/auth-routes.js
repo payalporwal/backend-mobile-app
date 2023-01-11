@@ -15,7 +15,11 @@ router.post('/register', [
 ], userControllers.register
 );
 
-
 router.post('/login', userControllers.login);
+
+router.patch('/forgetPassword', [
+    check('email').normalizeEmail().isEmail(), 
+    check('password').isLength({min:6}),
+], userControllers.forgetPassword);
 
 module.exports = router;

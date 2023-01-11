@@ -6,6 +6,7 @@ require('dotenv').config();
 const HttpError = require('../utils/http-error');
 const OTPmodel = require('../models/otp');
 const User = require('../models/user');
+const otp = require('../models/otp');
 
 const generateOTP = async (req, res, next) => {
     try{
@@ -29,19 +30,19 @@ const generateOTP = async (req, res, next) => {
         
         //saving to db
 
-        await new OTPmodel({userId: user.id, otp: hashedotp, email: email}).save();
+        await new OTPmodel({userId: user.id, otp: hashedotp, email: email, otptype: type}).save();
         console.log('saved');
 
         //send email as per need
         if(type){
             if(type=="Register"){
               const {message, subject_mail} = require('../utils/email/register-mail');
-              email_message=message(OTP)
+              email_message=message(OTP, user.username)
               email_subject=subject_mail
             }
             else if(type=="Reset Password"){
               const {message, subject_mail} = require('../utils/email/reset-mail');
-              email_message=message(OTP)
+              email_message=message(OTP, user.username)
               email_subject=subject_mail
             }
             else{
@@ -92,22 +93,25 @@ const generateOTP = async (req, res, next) => {
 const verifyOtp = async (req, res, next) =>{
     try{
         //check for inputs
-        const {email, OTP} = req.body;
-        if((!email || !OTP)) {
+        const {email, OTP, type} = req.body;
+        if((!email || !OTP || !type)) {
             return next(new HttpError('Please provide correct input', false, 422));
         }
 
         //verifying user for valid otp
         const otpdata = await OTPmodel.findOne({email: email});
         if(!otpdata){
-            return next(new HttpError('Invalid OTP, Please Retry', false, 404));
+            return next(new HttpError('OTP Expired, Please Retry', false, 404));
         }
 
+        //verify type
+        
+        
         //comparing otp
         const valid = await bcrypt.compare(String(OTP), otpdata.otp);
 
         //validate for email and otp
-        if(email === otpdata.email && valid){
+        if(email === otpdata.email && valid && type === otpdata.otptype){
             await otpdata.remove();
             res.status(200).json({
                 message: 'OTP Verified',
