@@ -12,6 +12,16 @@ router.get('/email', check('email').isEmail(), processControllers.getUserbyEmail
 
 router.get('/dashboard', processControllers.getUserbyId);
 
+router.post('/supportrequest', [
+    check('text').not().isEmpty(), 
+    check('type').not().isEmpty(), 
+], processControllers.supportRequest);
+
+router.post('/feedback', [
+    check('text').not().isEmpty(), 
+    check('type').not().isEmpty(), 
+], processControllers.feedback);
+
 router.patch('/update', [
     check('username').not().isEmpty(), 
     check('phone').isMobilePhone(),

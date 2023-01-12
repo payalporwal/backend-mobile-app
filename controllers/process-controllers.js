@@ -4,6 +4,12 @@ const bcrypt = require('bcryptjs');
 const UserToken = require('../models/token');
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
+const UserAppResponse = require('../models/support');
+
+var current = new Date();
+const timeStamp = new Date(Date.UTC(current.getFullYear(), 
+current.getMonth(),current.getDate(),current.getHours(), 
+current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
 
 
 const getUserbyId = async (req, res, next) => {
@@ -27,7 +33,7 @@ const getUserbyId = async (req, res, next) => {
             email: user.email,
             phone: user.phone,
             age: user.age,
-            gender: user.gender
+            gender: user.gender,
         });
     } catch (err) {
         const error = new HttpError(
@@ -87,6 +93,7 @@ const updateUser = async (req, res, next) => {
         user.phone = phone;
         user.age = age;
         user.gender = gender;
+        user.updatedAt = timeStamp;
 
         await user.save();
 
@@ -139,6 +146,7 @@ const changePassword = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(newpassword, salt);
 
         user.password = hashedPassword;
+        user.updatedAt = timeStamp;
         await user.save();
 
         res.status(200).json({message: 'Password changes successfully!', success: true});
@@ -159,9 +167,38 @@ const deleteUser = async (req, res, next) => {
     }
 };
 
+const supportRequest = async (req, res, next) =>{
+    try{
+        const {text, type} = req.body;
+        if(!text) {
+            return next(HttpError('Write Something and try again', false, 400));
+        }
+        await new UserAppResponse({userId: req.userData.userId, email: req.userData.email, content: text, responsetype: type}).save();
+        res.status(201).json({message: 'Successfully sent, Will get back to you soon', success: true});
+    } catch (err){
+        return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);
+    }
+    
+};
+
+const feedback = async (req, res, next) =>{
+    try{
+        const {text, type} = req.body;
+        if(!text) {
+            return next(HttpError('Write Something and try again', false, 400));
+        }
+        await new UserAppResponse({userId: req.userData.userId, email: req.userData.email, content: text, responsetype: type}).save();
+        res.status(201).json({message: 'Thankyou for your feeback, it is valuable for us', success: true});
+    } catch (err){
+        return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);
+    }
+    
+};
 
 exports.getUserbyId = getUserbyId;
 exports.getUserbyEmail = getUserbyEmail;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
 exports.changePassword = changePassword;
+exports.supportRequest = supportRequest;
+exports.feedback = feedback;

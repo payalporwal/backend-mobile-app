@@ -7,13 +7,9 @@ current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
 
 const Schema = mongoose.Schema;
 
-const OTPschema = new Schema({
+const UserAppResponse = new Schema({
     userId: {
 		type: Schema.Types.ObjectId,
-		required: true,
-	},
-	otp: {
-		type: String,
 		required: true,
 	},
     email: {
@@ -21,15 +17,18 @@ const OTPschema = new Schema({
         required: true,
         unique: true,
     },
-	otptype: {
+	content: {
 		type: String,
-		required: true
+		required: true,
 	},
+    responsetype: {
+        type: String,
+        required: true,
+    },
 	createdAt: {
 		type: Date,
 		default: timeStamp,
-		expires: '5m', //5 min
 	},
 });
 
-module.exports = mongoose.model('OTP', OTPschema );
+module.exports = mongoose.model('UserAppResponse', UserAppResponse);
