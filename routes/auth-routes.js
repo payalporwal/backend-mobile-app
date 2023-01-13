@@ -18,7 +18,7 @@ router.post('/register', [
 router.post('/login', [
     check('email').normalizeEmail().isEmail(), 
     check('password').isLength({min:6}),
-    check('devicetoken').notEmpty(),
+    //check('devicetoken').notEmpty(),
 ], userControllers.login);
 
 router.patch('/forgetPassword', [
