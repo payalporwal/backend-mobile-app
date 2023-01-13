@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
 require('dotenv').config();
 
 const HttpError = require('../utils/http-error');
@@ -8,20 +9,39 @@ const OTPmodel = require('../models/otp');
 const User = require('../models/user');
 const otp = require('../models/otp');
 
+function otpfunc() {
+    otplist = []
+
+    for( let i=0; i<6; i++){
+        otplist.push(Math.floor(Math.random() * 9)+1);
+    }
+    let shuffled = otplist
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value)
+    
+    const otp = shuffled.reduce((accum, digit) => (accum * 10) + digit, 0);
+    return otp;
+}
+
 const generateOTP = async (req, res, next) => {
     try{
-        const {email, type} = req.body;
-        if((!email || !type)) {
-            return next(new HttpError('Please provide correct input', false, 422));
+        const errors = validationResult(req);
+          if (!errors.isEmpty()) {
+          return next(
+              new HttpError('Invalid inputs passed, Recheck', false, 422)
+          );
         }
+        const {email, type} = req.body;
         const user = await User.findOne({email: email});
         //checking for user to send otp for login or other
         if(!user){
-            return next(new HttpError('Please register user, Try Again!', false, 404));
+            return next(new HttpError('No user found, Register instead!', false, 404));
         }
         
         //generating otp
-        const OTP = Math.floor(Math.random() * 9000) + 1000;
+        const OTP = otpfunc();
+
         console.log(OTP);
 
         //hashing otp for security
@@ -46,7 +66,7 @@ const generateOTP = async (req, res, next) => {
               email_subject=subject_mail
             }
             else{
-              return next(new HttpError('Invalid Request', false, 400));
+              return next(new HttpError('Invalid Request!', false, 400));
             }
           }
         
@@ -63,7 +83,7 @@ const generateOTP = async (req, res, next) => {
 
         //set email
         const mailOptions = {
-            from: `"Pace Support"<${process.env.EMAIL_ADDRESS}>`,
+            from: `"No-Reply PACE"<${process.env.EMAIL_ADDRESS}>`,
             to: `${email}`,
             subject: email_subject,
             text: email_message ,
@@ -80,7 +100,7 @@ const generateOTP = async (req, res, next) => {
             }
         });
         res.status(201).json({
-            message: 'OTP sent successfully',
+            message: 'OTP sent on Email!',
             success: true
         });
 
@@ -92,11 +112,14 @@ const generateOTP = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) =>{
     try{
+        const errors = validationResult(req);
+          if (!errors.isEmpty()) {
+          return next(
+              new HttpError('Invalid inputs passed, Recheck', false, 422)
+          );
+        }
         //check for inputs
         const {email, OTP, type} = req.body;
-        if((!email || !OTP || !type)) {
-            return next(new HttpError('Please provide correct input', false, 422));
-        }
 
         //verifying user for valid otp
         const otpdata = await OTPmodel.findOne({email: email});
@@ -114,16 +137,16 @@ const verifyOtp = async (req, res, next) =>{
         if(email === otpdata.email && valid && type === otpdata.otptype){
             await otpdata.remove();
             res.status(200).json({
-                message: 'OTP Verified',
+                message: 'OTP Verification Successful!',
                 success: true
             });
         } else {
-            return next(new HttpError('Invalid Request', false, 400));
+            return next(new HttpError('Invalid Request!', false, 400));
         }
 
     } catch(err){
         console.log(err);
-        return next(new HttpError('Something went wrong, try again', false, 500));
+        return next(new HttpError('Something went wrong, try again!', false, 500));
     }
 };
 

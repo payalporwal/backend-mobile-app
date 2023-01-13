@@ -18,7 +18,7 @@ const getUserbyId = async (req, res, next) => {
     
         if(!user) {
             const error = new HttpError(
-                'Couldn\'t find user for the provided id.',
+                'No valid user found, Try Again',
                 false,
                 404
             );
@@ -26,7 +26,7 @@ const getUserbyId = async (req, res, next) => {
             return next(error);
         }
         res.status(200).json({
-            message: `Access as ${user.username}`,
+            message: `Access PACE as ${user.username}`,
             success: true,
             id: user.id,
             name: user.username,
@@ -37,7 +37,7 @@ const getUserbyId = async (req, res, next) => {
         });
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, Couldn\'t find user profile. Try Again!',
+            'Something went wrong, Try Again!',
             false,
             500
         );
@@ -50,14 +50,14 @@ const getUserbyEmail = async (req, res, next) => {
         const user = await User.findOne({ email: `${req.userData.email}` }).select("-password");
         if(!user) {
             const error = new HttpError(
-                'Couldn\'t find user for the provided email.',
+                'No valid user found, Try Again',
                 false,
                 404
             );
             return next(error);
         }
         res.status(200).json({
-            message: `Access as ${user.username}`,
+            message: `Access PACE as ${user.username}`,
             success: true,
             id: user.id,
             name: user.username,
@@ -68,7 +68,7 @@ const getUserbyEmail = async (req, res, next) => {
         });
     } catch (err) {
         const error = new HttpError(
-            'Something went wrong, Couldn\'t find user profile. Try Again!',
+            'Something went wrong, Try Again!',
             false,
             500
         );
@@ -81,12 +81,19 @@ const updateUser = async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
         return next(
-            new HttpError('Invalid inputs passed, please check your data.', false, 422)
+            new HttpError('Invalid inputs passed, Recheck', false, 422)
         );
         }
 
         const { username, phone, age, gender } = req.body;
         const userId = req.userData.userId;
+
+        const userphone = await User.findOne({phone: phone});
+        if(userphone){
+            return next(
+                new HttpError('Phone number exists, try another', false, 422)
+            );
+        }
 
         const user = await User.findById(userId);
         user.username = username;
@@ -97,10 +104,10 @@ const updateUser = async (req, res, next) => {
 
         await user.save();
 
-        res.status(200).json({message: 'Updation Completed', success: true});
+        res.status(200).json({message: 'Updation Complete', success: true});
     } catch (err) {
         const error = new HttpError(
-        'Something went wrong, Couldn\'t update profile.', false,
+        'Something went wrong, Try Again', false,
         500
         );
         return next(error);
@@ -112,7 +119,7 @@ const changePassword = async (req, res, next) => {
         const errors = validationResult(req);
             if (!errors.isEmpty()) {
             return next(
-                new HttpError('Invalid inputs passed, please check your data.', false, 422)
+                new HttpError('Invalid inputs passed, Recheck', false, 422)
             );
         }
 
@@ -126,7 +133,7 @@ const changePassword = async (req, res, next) => {
         } catch (err) {
             console.log(err);
             const error = new HttpError(
-            'Couldn\'t change password, Retry!',
+            'Password not changed, Retry!',
             false,
             500
             );
@@ -135,7 +142,7 @@ const changePassword = async (req, res, next) => {
     
         if (!isValidPassword) {
             const error = new HttpError(
-            'Invalid credentials, Enter Correct Password',
+            'Wrong credentials, check password',
             false,
             403
             );
@@ -149,10 +156,10 @@ const changePassword = async (req, res, next) => {
         user.updatedAt = timeStamp;
         await user.save();
 
-        res.status(200).json({message: 'Password changes successfully!', success: true});
+        res.status(200).json({message: 'Password changes successful!', success: true});
     } catch(err){
         console.log(err);
-        return next(new HttpError('Something went wrong, Couldn\'t Change Password!', false, 500));
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 };
 
@@ -160,7 +167,7 @@ const deleteUser = async (req, res, next) => {
     try{
         await User.findByIdAndUpdate(req.userData.userId, {active: false});
         await UserToken.findOneAndDelete({userId: req.userData.userId});
-        res.status(200).json({message: 'Deleted User', success: true});
+        res.status(200).json({message: 'Account Deletion Successful', success: true});
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong, Couldn\'t Delete!', false, 500));
@@ -174,7 +181,7 @@ const supportRequest = async (req, res, next) =>{
             return next(HttpError('Write Something and try again', false, 400));
         }
         await new UserAppResponse({userId: req.userData.userId, email: req.userData.email, content: text, responsetype: type}).save();
-        res.status(201).json({message: 'Successfully sent, Will get back to you soon', success: true});
+        res.status(201).json({message: 'Request sent, Will get back to you soon', success: true});
     } catch (err){
         return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);
     }
@@ -188,7 +195,7 @@ const feedback = async (req, res, next) =>{
             return next(HttpError('Write Something and try again', false, 400));
         }
         await new UserAppResponse({userId: req.userData.userId, email: req.userData.email, content: text, responsetype: type}).save();
-        res.status(201).json({message: 'Thankyou for your feeback, it is valuable for us', success: true});
+        res.status(201).json({message: 'Thankyou for your feeback, it is valuable for us!', success: true});
     } catch (err){
         return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);
     }

@@ -7,19 +7,23 @@ const router = express.Router();
 
 
 router.post('/register', [
-    check('username').not().isEmpty(), 
+    check('username').notEmpty(), 
     check('email').normalizeEmail().isEmail(), 
     check('password').isLength({min:6}),
     check('age').isNumeric(),
-    check('gender').not().isEmpty(),
+    check('gender').notEmpty(),
 ], userControllers.register
 );
 
-router.post('/login', userControllers.login);
+router.post('/login', [
+    check('email').normalizeEmail().isEmail(), 
+    check('password').isLength({min:6}),
+    check('devicetoken').notEmpty(),
+], userControllers.login);
 
 router.patch('/forgetPassword', [
     check('email').normalizeEmail().isEmail(), 
-    check('password').isLength({min:6}),
+    check('password').isLength({min:6})
 ], userControllers.forgetPassword);
 
 module.exports = router;

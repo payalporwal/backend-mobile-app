@@ -11,18 +11,18 @@ const getnewToken = async (req, res, next) => {
     try{
         const tokenData = await UserToken.findOne({userId: req.params.uid});
         if(!tokenData){
-            return next(new HttpError('Invalid Access, Login Again', false, 404));
+            return next(new HttpError('Invalid Access, Try Logging In', false, 404));
         }
         const decodedToken = jwt.verify(tokenData.token, process.env.REFRESH_TOKEN_PRIVATE_KEY);
         
-        const thisUser = await User.findOne({id: decodedToken.userId});
+        const thisUser = await User.findOne({id: decodedToken.userId, active: true});
         if(!thisUser) {
-            return next(new HttpError('Can\'t Access, no user found', false, 403));
+            return next(new HttpError('No user found, Register yourself', false, 403));
         }
         const accessToken = await generateTokens(thisUser);
 
         res.status(201).json({
-            message: "Token created successfully",
+            message: "Token creation successful",
             success: true,
             token: accessToken
         });

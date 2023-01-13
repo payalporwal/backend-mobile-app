@@ -7,45 +7,16 @@ current.getMonth(),current.getDate(),current.getHours(),
 current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
 
 const userSchema = mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-        minlenth: 6,
-    },
-    phone: {
-        type: Number,
-        unique: true,
-    },
-    gender: {
-        type: String,
-        required: true,
-    },
-    age: {
-        type: Number,
-        required: true,
-    },
-    active: {
-        type: Boolean,
-        require: true,
-        default: true
-    },
-    createdAt : { 
-        type: Date, 
-        default : timeStamp 
-    },
-    updatedAt: {
-        type: Date, 
-        default : timeStamp 
-    }
+    username: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true, minlenth: 6 },
+    phone: { type: Number, unique: true },
+    gender: { type: String, required: true },
+    age: { type: Number, required: true },
+    devicetoken: { type: String },
+    active: { type: Boolean, require: true, default: true },
+    createdAt : { type: Date, default : timeStamp },
+    updatedAt: { type: Date, default : timeStamp }
 });
 
 userSchema.plugin(uniqueValidator, {message: 'Already taken.'});

@@ -13,20 +13,20 @@ router.get('/email', check('email').isEmail(), processControllers.getUserbyEmail
 router.get('/dashboard', processControllers.getUserbyId);
 
 router.post('/supportrequest', [
-    check('text').not().isEmpty(), 
-    check('type').not().isEmpty(), 
+    check('text').notEmpty(), 
+    check('type').notEmpty(), 
 ], processControllers.supportRequest);
 
 router.post('/feedback', [
-    check('text').not().isEmpty(), 
-    check('type').not().isEmpty(), 
+    check('text').notEmpty(), 
+    check('type').notEmpty(), 
 ], processControllers.feedback);
 
 router.patch('/update', [
-    check('username').not().isEmpty(), 
+    check('username').notEmpty(), 
     check('phone').isMobilePhone(),
     check('age').isNumeric(),
-    check('gender').not().isEmpty()
+    check('gender').notEmpty()
 ], processControllers.updateUser);
 
 router.patch('/changePassword', [

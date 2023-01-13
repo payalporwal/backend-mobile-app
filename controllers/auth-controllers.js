@@ -63,7 +63,14 @@ const register = async (req, res, next) => {
   
 const login = async (req, res, next) => {
     try {
-      const { email, password } = req.body;
+      const errors = validationResult(req);
+          if (!errors.isEmpty()) {
+          return next(
+              new HttpError('Invalid inputs passed, Recheck', false, 422)
+          );
+      }
+
+      const { email, password, devicetoken } = req.body;
 
       const existingUser = await User.findOne({ email: email });
     
@@ -97,7 +104,8 @@ const login = async (req, res, next) => {
         return next(error);
       }
       const accessToken = await generateTokens(existingUser);
-    
+      existingUser.devicetoken = devicetoken;
+      await existingUser.save();
   
       res.json({ 
         message: 'Logged In Successfully!',
@@ -121,7 +129,7 @@ const forgetPassword = async (req, res, next) => {
       const errors = validationResult(req);
           if (!errors.isEmpty()) {
           return next(
-              new HttpError('Invalid inputs passed, please check your data.', false, 422)
+              new HttpError('Invalid inputs passed, Recheck', false, 422)
           );
       }
 
