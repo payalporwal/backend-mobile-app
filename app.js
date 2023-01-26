@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 
-const userRouter = require('./routes/auth-routes');
+const authRouter = require('./routes/auth-routes');
 const processRouter = require('./routes/process-routes');
 const tokenRouter = require('./routes/token-routes');
 const otpRouter = require('./routes/otp-route');
@@ -30,7 +30,8 @@ app.use((req, res, next) => {
     next();
   });
 
-app.use('/api/users',userRouter);
+app.use('/api/users',authRouter);
+app.use('/api/web', authRouter);
 app.use('/api/process',processRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);

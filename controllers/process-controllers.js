@@ -26,7 +26,7 @@ const getUserbyId = async (req, res, next) => {
             return next(error);
         }
         res.status(200).json({
-            message: `Access PACE as ${user.username}`,
+            message: `Access as ${user.username}`,
             success: true,
             id: user.id,
             name: user.username,
@@ -57,7 +57,7 @@ const getUserbyEmail = async (req, res, next) => {
             return next(error);
         }
         res.status(200).json({
-            message: `Access PACE as ${user.username}`,
+            message: `Access as ${user.username}`,
             success: true,
             id: user.id,
             name: user.username,
