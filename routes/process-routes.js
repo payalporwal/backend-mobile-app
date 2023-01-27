@@ -8,9 +8,19 @@ const router = express.Router();
 
 router.use(checkAuth);
 
+const nocache = (req, res, next) => {
+    res.header('Cache-Control', 'private , no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    next();
+}
+
+
 router.get('/email', check('email').isEmail(), processControllers.getUserbyEmail);
 
 router.get('/dashboard', processControllers.getUserbyId);
+
+router.get('/rtc/:channel/:role/:tokentype', nocache, processControllers.generateAgoraToken);
 
 router.post('/supportrequest', [
     check('text').notEmpty(), 

@@ -30,8 +30,13 @@ app.use((req, res, next) => {
     next();
   });
 
+//for app login signup and others
 app.use('/api/users',authRouter);
+
+//web login signup
 app.use('/api/web', authRouter);
+
+//common
 app.use('/api/process',processRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);

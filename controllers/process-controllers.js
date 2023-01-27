@@ -1,10 +1,12 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const { RtcTokenBuilder, RtcRole} = require('agora-access-token');
 
 const UserToken = require('../models/token');
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
 const UserAppResponse = require('../models/support');
+const config = require('../config');
 
 var current = new Date();
 const timeStamp = new Date(Date.UTC(current.getFullYear(), 
@@ -75,6 +77,63 @@ const getUserbyEmail = async (req, res, next) => {
         return next(error);
     }
 };
+
+const generateAgoraToken = (req, res, next) => {
+    try{
+    res.header('Access-Control-Allow-Origin', '*');
+
+    const channelName = req.params.channel;
+    if (!channelName) {
+        return next(
+            new HttpError('Channel is required, Recheck', false, 500)
+        );
+    }
+
+    let uid = req.userData.userId;
+    if(!uid || uid === '') {
+        return next(
+            new HttpError('Invalid access', false, 500)
+        );
+    }
+    // get role
+    let role;
+    if (req.params.role === 'speaker') {
+        role = RtcRole.PUBLISHER;
+    } else if (req.params.role === 'listener') {
+        role = RtcRole.SUBSCRIBER
+    } else {
+        return next(
+            new HttpError('Invalid Role', false, 500)
+        );
+    }
+
+    let expireTime = req.query.expiry;
+    if (!expireTime || expireTime === '') {
+        expireTime = 2700;
+    } else {
+        expireTime = parseInt(expireTime, 10);
+    }
+
+
+    const currentTime = Math.floor(Date.now() / 1000);
+    const privilegeExpireTime = currentTime + expireTime;
+
+    let token;
+    if (req.params.tokentype === 'userAccount') {
+        token = RtcTokenBuilder.buildTokenWithAccount(config.APP_ID, config.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
+    } else if (req.params.tokentype === 'uid') {
+        token = RtcTokenBuilder.buildTokenWithUid(config.APP_ID, config.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
+    } else {
+        return next(
+            new HttpError('Invalid Token type', false, 500)
+        );
+    }
+    res.json(201).json({rtctoken : token});
+    } catch (err) {
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+}
+
 
 const updateUser = async (req, res, next) => {
     try{
@@ -209,3 +268,4 @@ exports.deleteUser = deleteUser;
 exports.changePassword = changePassword;
 exports.supportRequest = supportRequest;
 exports.feedback = feedback;
+exports.generateAgoraToken = generateAgoraToken;
