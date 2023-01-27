@@ -6,7 +6,7 @@ const UserToken = require('../models/token');
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
 const UserAppResponse = require('../models/support');
-const config = require('../config');
+require('dotenv').config();
 
 var current = new Date();
 const timeStamp = new Date(Date.UTC(current.getFullYear(), 
@@ -80,7 +80,6 @@ const getUserbyEmail = async (req, res, next) => {
 
 const generateAgoraToken = (req, res, next) => {
     try{
-    res.header('Access-Control-Allow-Origin', '*');
 
     const channelName = req.params.channel;
     if (!channelName) {
@@ -120,16 +119,17 @@ const generateAgoraToken = (req, res, next) => {
 
     let token;
     if (req.params.tokentype === 'userAccount') {
-        token = RtcTokenBuilder.buildTokenWithAccount(config.APP_ID, config.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
+        token = RtcTokenBuilder.buildTokenWithAccount(process.env.APP_ID, process.env.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
     } else if (req.params.tokentype === 'uid') {
-        token = RtcTokenBuilder.buildTokenWithUid(config.APP_ID, config.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
+        token = RtcTokenBuilder.buildTokenWithUid(process.env.APP_ID, process.env.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
     } else {
         return next(
             new HttpError('Invalid Token type', false, 500)
         );
     }
-    res.json(201).json({rtctoken : token});
+    res.status(201).json({ message: 'RTC Token Created', success: true, rtctoken : token});
     } catch (err) {
+        console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 }
