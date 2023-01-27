@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
+const encrypt = require('mongoose-encryption');
+
+const secret = process.env.MONGOOSE_SECRET;
 
 var current = new Date();
 const timeStamp = new Date(Date.UTC(current.getFullYear(), 
 current.getMonth(),current.getDate(),current.getHours(), 
 current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlenth: 6 },
@@ -19,6 +22,7 @@ const userSchema = mongoose.Schema({
     updatedAt: { type: Date, default : timeStamp }
 });
 
+userSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']})
 userSchema.plugin(uniqueValidator, {message: 'Already taken.'});
 
 module.exports = mongoose.model('User', userSchema);

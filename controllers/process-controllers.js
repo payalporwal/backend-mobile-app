@@ -16,7 +16,7 @@ current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
 
 const getUserbyId = async (req, res, next) => {
     try{
-        const user = await User.findById(req.userData.userId).select("-password");
+        const user = await User.findById(req.userData.userId);
     
         if(!user) {
             const error = new HttpError(
@@ -49,7 +49,7 @@ const getUserbyId = async (req, res, next) => {
 
 const getUserbyEmail = async (req, res, next) => {
     try{
-        const user = await User.findOne({ email: `${req.userData.email}` }).select("-password");
+        const user = await User.findOne({ email: `${req.userData.email}` });
         if(!user) {
             const error = new HttpError(
                 'No valid user found, Try Again',
