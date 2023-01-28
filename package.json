@@ -24,6 +24,7 @@
     "express-validator": "^6.14.2",
     "fcm-notification": "^2.0.0",
     "firebase-admin": "^11.4.1",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.1",
     "mongoose-encryption": "^2.1.2",

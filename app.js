@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const https = require('https');
 
 
 const authRouter = require('./routes/auth-routes');
@@ -56,6 +58,10 @@ app.use((error, req, res, next) => {
 });
 
 
-app.listen(config.PORT, config.HOST, () => {
-    console.log(`Server running on http://${config.HOST}:${config.PORT}`);
+https
+  .createServer(
+    app
+  )
+  .listen(config.PORT, config.HOST, () => {
+    console.log(`Server running on https://${config.HOST}:${config.PORT}`);
 })
