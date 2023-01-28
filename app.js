@@ -57,11 +57,22 @@ app.use((error, req, res, next) => {
     res.json({message: error.message || 'Unknown Error!!', success: error.success});
 });
 
-
+if(process.env.NODE_ENV!== 'test'){
 https
   .createServer(
+		// Provide the private and public key to the server by reading each
+		// file's content with the readFileSync() method.
+    {
+      key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.key"),
+      cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.crt"),
+    },
     app
   )
   .listen(config.PORT, config.HOST, () => {
     console.log(`Server running on https://${config.HOST}:${config.PORT}`);
 })
+} else {
+    app.listen(config.PORT, config.HOST, () => {
+        console.log(`Server running on http://${config.HOST}:${config.PORT}`);
+    })
+}
