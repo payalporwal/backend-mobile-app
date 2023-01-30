@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     updatedAt: { type: Date, default : timeStamp }
 });
 
-userSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']})
+userSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']});
 userSchema.plugin(uniqueValidator, {message: 'Already taken.'});
 
 module.exports = mongoose.model('User', userSchema);
