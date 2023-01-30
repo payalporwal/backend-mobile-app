@@ -7,7 +7,6 @@ require('dotenv').config();
 const HttpError = require('../utils/http-error');
 const OTPmodel = require('../models/otp');
 const User = require('../models/user');
-const otp = require('../models/otp');
 
 function otpfunc() {
     otplist = []
@@ -132,16 +131,20 @@ const verifyOtp = async (req, res, next) =>{
         
         //comparing otp
         const valid = await bcrypt.compare(String(OTP), otpdata.otp);
+        if(!valid) {
+            await otpdata.remove();
+            return next(new HttpError('Invalid OTP!, Try Again', false, 400));
+        }
 
         //validate for email and otp
-        if(email === otpdata.email && valid && type === otpdata.otptype){
+        if(email === otpdata.email && type === otpdata.otptype){
             await otpdata.remove();
             res.status(200).json({
                 message: 'OTP Verification Successful!',
                 success: true
             });
         } else {
-            return next(new HttpError('Invalid Request!', false, 400));
+            return next(new HttpError('Invalid Request!, Try Again', false, 400));
         }
 
     } catch(err){
