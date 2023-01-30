@@ -9,6 +9,7 @@ const processRouter = require('./routes/process-routes');
 const tokenRouter = require('./routes/token-routes');
 const otpRouter = require('./routes/otp-route');
 const notiRouter = require('./routes/notification');
+const googleRouter = require('./routes/googleauth-route');
 
 const HttpError = require('./utils/http-error');
 
@@ -32,6 +33,10 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
     next();
   });
+
+// google auth
+app.use('/api/google', googleRouter);
+
 
 //for app login signup and others
 app.use('/api/users',authRouter);
