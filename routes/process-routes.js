@@ -36,7 +36,8 @@ router.patch('/update', [
     check('username').notEmpty(), 
     check('phone').isMobilePhone(),
     check('age').isNumeric(),
-    check('gender').notEmpty()
+    check('gender').notEmpty(),
+   check('slideno').isNumeric()
 ], processControllers.updateUser);
 
 router.patch('/changePassword', [

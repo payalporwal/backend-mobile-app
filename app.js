@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const https = require('https');
+const session = require('express-session');
+const passport = require('passport');
 
 
 const authRouter = require('./routes/auth-routes');
@@ -23,6 +25,17 @@ const app = express();
 
 app.use(bodyParser.json());
 
+
+app.use(session({
+  secret:"My user database secret.",
+  resave:false,
+  saveUninitialized:false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
@@ -35,7 +48,7 @@ app.use((req, res, next) => {
   });
 
 // google auth
-app.use('/api/google', googleRouter);
+app.use('/', googleRouter);
 
 
 //for app login signup and others

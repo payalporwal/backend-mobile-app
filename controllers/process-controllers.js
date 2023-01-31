@@ -36,6 +36,7 @@ const getUserbyId = async (req, res, next) => {
             phone: user.phone,
             age: user.age,
             gender: user.gender,
+            slideno: user.slideno
         });
     } catch (err) {
         const error = new HttpError(
@@ -66,7 +67,8 @@ const getUserbyEmail = async (req, res, next) => {
             email: user.email,
             phone: user.phone,
             age: user.age,
-            gender: user.gender
+            gender: user.gender,
+            slideno: user.slideno
         });
     } catch (err) {
         const error = new HttpError(
@@ -144,15 +146,16 @@ const updateUser = async (req, res, next) => {
         );
         }
 
-        const { username, phone, age, gender } = req.body;
+        const { username, phone, age, gender, slideno } = req.body;
         const userId = req.userData.userId;
 
         const userphone = await User.findOne({phone: phone});
         if(userphone){
+        if(userphone.id !== userId){
             return next(
                 new HttpError('Phone number exists, try another', false, 422)
             );
-        }
+        }}
 
         const user = await User.findById(userId);
         user.username = username;
@@ -160,11 +163,13 @@ const updateUser = async (req, res, next) => {
         user.age = age;
         user.gender = gender;
         user.updatedAt = timeStamp;
+        user.slideno = slideno;
 
         await user.save();
 
         res.status(200).json({message: 'Updation Complete', success: true});
     } catch (err) {
+        console.log(err);
         const error = new HttpError(
         'Something went wrong, Try Again', false,
         500

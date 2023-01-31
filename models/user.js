@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const encrypt = require('mongoose-encryption');
+const passportLocalMongoose = require("passport-local-mongoose");
+const findOrCreate = require("mongoose-findorcreate");
 
 const secret = process.env.MONGOOSE_SECRET;
 
@@ -16,6 +18,7 @@ const userSchema = new mongoose.Schema({
     phone: { type: Number },
     gender: { type: String, required: true },
     age: { type: Number, required: true },
+    slideno: { type: Number, default: 0 },
     devicetoken: { type: String },
     active: { type: Boolean, require: true, default: true },
     createdAt : { type: Date, default : timeStamp },
@@ -24,5 +27,8 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']});
 userSchema.plugin(uniqueValidator, {message: 'Already taken.'});
+userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
+
 
 module.exports = mongoose.model('User', userSchema);
