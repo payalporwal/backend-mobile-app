@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     gender: { type: String, required: true },
     age: { type: Number, required: true },
     slideno: { type: Number, default: 0 },
+    completedDoc: { type: Boolean, default: false},
     devicetoken: { type: String },
     active: { type: Boolean, require: true, default: true },
     createdAt : { type: Date, default : timeStamp },

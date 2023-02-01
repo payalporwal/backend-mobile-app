@@ -25,7 +25,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-
+/*
 app.use(session({
   secret:"My user database secret.",
   resave:false,
@@ -34,7 +34,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+*/
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   });
 
 // google auth
-app.use('/', googleRouter);
+//app.use('/', googleRouter);
 
 
 //for app login signup and others

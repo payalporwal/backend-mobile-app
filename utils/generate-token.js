@@ -5,7 +5,7 @@ const HttpError = require('./http-error');
 
 require('dotenv').config();
 
-const generateTokens = async (user) => {
+module.exports = async (user) => {
 	try {
 		const payload = { userId: user.id, email: user.email };
 		const accessToken = jwt.sign(
@@ -28,5 +28,3 @@ const generateTokens = async (user) => {
 		return next(new HttpError('Something went wrong, Token not created', false, 400));
 	}
 };
-
-module.exports = generateTokens;

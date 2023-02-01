@@ -34,7 +34,7 @@ const getnewToken = async (req, res, next) => {
     }
  };
  
- const logoutUser = async(req, res, next) => {
+const logoutUser = async(req, res, next) => {
      try {
          const userToken = await UserToken.findOne({ userId: req.params.uid });
          if (!userToken)

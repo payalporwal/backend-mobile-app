@@ -1,19 +1,21 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
-const { RtcTokenBuilder, RtcRole} = require('agora-access-token');
 
 const UserToken = require('../models/token');
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
 const UserAppResponse = require('../models/support');
+const selectUser = require('../utils/select-user');
+
 require('dotenv').config();
 
 var current = new Date();
 const timeStamp = new Date(Date.UTC(current.getFullYear(), 
-current.getMonth(),current.getDate(),current.getHours(), 
-current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
+    current.getMonth(),current.getDate(),current.getHours(), 
+    current.getMinutes(),current.getSeconds(), current.getMilliseconds())
+);
 
-
+//access 
 const getUserbyId = async (req, res, next) => {
     try{
         const user = await User.findById(req.userData.userId);
@@ -137,6 +139,60 @@ const generateAgoraToken = (req, res, next) => {
 }
 
 
+const getslots = async(req, res, next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, Recheck', false, 422)
+        );
+        }
+    } catch (err) {
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+}
+
+const slotbook = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, Recheck', false, 422)
+        );
+        }
+
+        const selectedUser = selectUser(req.userData.userId);
+        
+    } catch (err) {
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+};
+
+
+//updation apis 
+
+const updateSlide = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, Recheck', false, 422)
+        );
+        }
+
+        const user = await User.findById(req.userData.userId);
+        user.slideno = req.body.slideno;
+        user.completedDoc = req.body.completedDoc;
+        await user.save();
+        res.status(200).json({
+            message: 'Updated Slide',
+            success: true
+        });
+    } catch (err) {
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+};
+
 const updateUser = async (req, res, next) => {
     try{
         const errors = validationResult(req);
@@ -146,7 +202,7 @@ const updateUser = async (req, res, next) => {
         );
         }
 
-        const { username, phone, age, gender, slideno } = req.body;
+        const { username, phone, age, gender } = req.body;
         const userId = req.userData.userId;
 
         const userphone = await User.findOne({phone: phone});
@@ -163,7 +219,6 @@ const updateUser = async (req, res, next) => {
         user.age = age;
         user.gender = gender;
         user.updatedAt = timeStamp;
-        user.slideno = slideno;
 
         await user.save();
 
@@ -268,9 +323,12 @@ const feedback = async (req, res, next) =>{
 
 exports.getUserbyId = getUserbyId;
 exports.getUserbyEmail = getUserbyEmail;
+exports.updateSlide = updateSlide;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
 exports.changePassword = changePassword;
 exports.supportRequest = supportRequest;
 exports.feedback = feedback;
 exports.generateAgoraToken = generateAgoraToken;
+exports.slotbook = slotbook;
+exports.getslots = getslots;

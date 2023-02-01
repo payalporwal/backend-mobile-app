@@ -20,7 +20,14 @@ router.get('/email', check('email').isEmail(), processControllers.getUserbyEmail
 
 router.get('/dashboard', processControllers.getUserbyId);
 
+//making calls 
 router.get('/rtc/:channel/:role/:tokentype', nocache, processControllers.generateAgoraToken);
+
+router.get('/myslots', [ check('ready').isBoolean()], processControllers.getslots);
+
+router.post('/slotbook', [check('strength').isNumeric(), check('date-time').isString(), check('note').notEmpty()], processControllers.slotbook);
+
+router.post('/slideupdate', [check('slideno').isNumeric(), check('completedDoc').isBoolean()] ,processControllers.updateSlide);
 
 router.post('/supportrequest', [
     check('text').notEmpty(), 
@@ -36,8 +43,7 @@ router.patch('/update', [
     check('username').notEmpty(), 
     check('phone').isMobilePhone(),
     check('age').isNumeric(),
-    check('gender').notEmpty(),
-   check('slideno').isNumeric()
+    check('gender').notEmpty()
 ], processControllers.updateUser);
 
 router.patch('/changePassword', [
