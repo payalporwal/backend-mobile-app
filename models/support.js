@@ -15,7 +15,6 @@ const UserAppResponse = new Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
     },
 	content: {
 		type: String,
