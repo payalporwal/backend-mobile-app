@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const https = require('https');
-const session = require('express-session');
-const passport = require('passport');
+//const session = require('express-session');
+//const passport = require('passport');
 
 
 const authRouter = require('./routes/auth-routes');
@@ -11,7 +11,8 @@ const processRouter = require('./routes/process-routes');
 const tokenRouter = require('./routes/token-routes');
 const otpRouter = require('./routes/otp-route');
 const notiRouter = require('./routes/notification');
-const googleRouter = require('./routes/googleauth-route');
+const callsRouter = require('./routes/call-routes');
+//const googleRouter = require('./routes/googleauth-route');
 
 const HttpError = require('./utils/http-error');
 
@@ -45,7 +46,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
     next();
-  });
+});
 
 // google auth
 //app.use('/', googleRouter);
@@ -59,6 +60,7 @@ app.use('/api/web', authRouter);
 
 //common
 app.use('/api/process',processRouter);
+app.use('/api/healercall', callsRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);
 app.use('/api/notification', notiRouter);
@@ -75,6 +77,7 @@ app.use((error, req, res, next) => {
     res.status(error.code || 500);
     res.json({message: error.message || 'Unknown Error!!', success: error.success});
 });
+
 
 if(process.env.NODE_ENV!== 'test'){
 https

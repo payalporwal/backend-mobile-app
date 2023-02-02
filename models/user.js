@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const encrypt = require('mongoose-encryption');
-const passportLocalMongoose = require("passport-local-mongoose");
-const findOrCreate = require("mongoose-findorcreate");
+//const passportLocalMongoose = require("passport-local-mongoose");
+//const findOrCreate = require("mongoose-findorcreate");
 
 const secret = process.env.MONGOOSE_SECRET;
 
@@ -28,8 +28,8 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']});
 userSchema.plugin(uniqueValidator, {message: 'Already taken.'});
-userSchema.plugin(passportLocalMongoose);
-userSchema.plugin(findOrCreate);
+//userSchema.plugin(passportLocalMongoose);
+//userSchema.plugin(findOrCreate);
 
 
 module.exports = mongoose.model('User', userSchema);

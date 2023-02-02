@@ -5,7 +5,7 @@ const UserToken = require('../models/token');
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
 const UserAppResponse = require('../models/support');
-const selectUser = require('../utils/select-user');
+
 
 require('dotenv').config();
 
@@ -15,7 +15,7 @@ const timeStamp = new Date(Date.UTC(current.getFullYear(),
     current.getMinutes(),current.getSeconds(), current.getMilliseconds())
 );
 
-//access 
+//access data apis
 const getUserbyId = async (req, res, next) => {
     try{
         const user = await User.findById(req.userData.userId);
@@ -82,95 +82,7 @@ const getUserbyEmail = async (req, res, next) => {
     }
 };
 
-const generateAgoraToken = (req, res, next) => {
-    try{
-
-    const channelName = req.params.channel;
-    if (!channelName) {
-        return next(
-            new HttpError('Channel is required, Recheck', false, 500)
-        );
-    }
-
-    let uid = req.userData.userId;
-    if(!uid || uid === '') {
-        return next(
-            new HttpError('Invalid access', false, 500)
-        );
-    }
-    // get role
-    let role;
-    if (req.params.role === 'speaker') {
-        role = RtcRole.PUBLISHER;
-    } else if (req.params.role === 'listener') {
-        role = RtcRole.SUBSCRIBER
-    } else {
-        return next(
-            new HttpError('Invalid Role', false, 500)
-        );
-    }
-
-    let expireTime = req.query.expiry;
-    if (!expireTime || expireTime === '') {
-        expireTime = 2700;
-    } else {
-        expireTime = parseInt(expireTime, 10);
-    }
-
-
-    const currentTime = Math.floor(Date.now() / 1000);
-    const privilegeExpireTime = currentTime + expireTime;
-
-    let token;
-    if (req.params.tokentype === 'userAccount') {
-        token = RtcTokenBuilder.buildTokenWithAccount(process.env.APP_ID, process.env.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
-    } else if (req.params.tokentype === 'uid') {
-        token = RtcTokenBuilder.buildTokenWithUid(process.env.APP_ID, process.env.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
-    } else {
-        return next(
-            new HttpError('Invalid Token type', false, 500)
-        );
-    }
-    res.status(201).json({ message: 'RTC Token Created', success: true, rtctoken : token});
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
-    }
-}
-
-
-const getslots = async(req, res, next) => {
-    try{
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-        return next(
-            new HttpError('Invalid inputs passed, Recheck', false, 422)
-        );
-        }
-    } catch (err) {
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
-    }
-}
-
-const slotbook = async (req, res, next) => {
-    try{
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-        return next(
-            new HttpError('Invalid inputs passed, Recheck', false, 422)
-        );
-        }
-
-        const selectedUser = selectUser(req.userData.userId);
-        
-    } catch (err) {
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
-    }
-};
-
-
 //updation apis 
-
 const updateSlide = async (req, res, next) => {
     try{
         const errors = validationResult(req);
@@ -282,6 +194,7 @@ const changePassword = async (req, res, next) => {
     }
 };
 
+//delete profile 
 const deleteUser = async (req, res, next) => {
     try{
         await User.findByIdAndUpdate(req.userData.userId, {active: false});
@@ -293,6 +206,7 @@ const deleteUser = async (req, res, next) => {
     }
 };
 
+//support and feedback apis
 const supportRequest = async (req, res, next) =>{
     try{
         const {text, type} = req.body;
@@ -329,6 +243,3 @@ exports.deleteUser = deleteUser;
 exports.changePassword = changePassword;
 exports.supportRequest = supportRequest;
 exports.feedback = feedback;
-exports.generateAgoraToken = generateAgoraToken;
-exports.slotbook = slotbook;
-exports.getslots = getslots;
