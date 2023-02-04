@@ -25,4 +25,6 @@ router.post('/slotbook', [check('strength').isNumeric(), check('datetime').isStr
 
 router.post('/agora/calltoken', [ check('channel').isString(), check('slotid').notEmpty(), check('expiry').isString()] ,nocache, callControllers.getCallToken);
 
+router.post('/cutcall', [check('slotid').notEmpty()], callControllers.cuttingCall);
+
 module.exports = router;

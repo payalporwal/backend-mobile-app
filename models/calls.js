@@ -16,6 +16,7 @@ const scheduleCall = new Schema({
     strength: { type: Number, required: true },
     note: { type: String, required: true },
     agoraToken: { type: String, default: null },
+    expire: { type: Boolean, default: false },
     createdAt : { type: Date, default : timeStamp },
     updatedAt: { type: Date, default : timeStamp }
 });

@@ -62,8 +62,7 @@ const getCallToken = async (req, res, next) => {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
-}
-
+};
 
 const slotbook = async (req, res, next) => {
     try{
@@ -92,9 +91,9 @@ const getslotsfortalk = async (req, res, next) => {
     try{
         const slots = await callSchema.findOne({talkerId: req.userData.userId});
     
-        if(!slots) {
+        if(!slots || slots.expire ) {
             return next(new HttpError(
-                'No valid user found, Try Again',
+                'No valid slot found, Try Again',
                 false,
                 404
             ));
@@ -127,15 +126,15 @@ const getslotsfortalk = async (req, res, next) => {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
-}
+};
 
 const getslotsforhear = async(req, res, next) => {
     try{
         const slots = await callSchema.findOne({listenerId: req.userData.userId});
     
-        if(!slots) {
+        if(!slots || slots.expire ) {
             return next(new HttpError(
-                'No valid user found, Try Again',
+                'No valid slot found, Try Again',
                 false,
                 404
             ));
@@ -158,9 +157,19 @@ const getslotsforhear = async(req, res, next) => {
     } catch (err) {
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
-}
+};
+
+const cuttingCall = async(req, res, next ) => {
+    try{
+        await callSchema.findByIdAndUpdate(req.body.slotid, {expire: true});
+        res.status(200).json({message: "Call Ended", success: true});
+    } catch(err){
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+};
 
 exports.getCallToken = getCallToken;
 exports.slotbook = slotbook;
 exports.getslotsforhear = getslotsforhear;
 exports.getslotsfortalk = getslotsfortalk;
+exports.cuttingCall = cuttingCall;
