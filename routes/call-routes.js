@@ -21,7 +21,7 @@ router.get('/talkslots', callControllers.getslotsfortalk);
 
 router.get('/hearslots', callControllers.getslotsforhear);
 
-router.post('/slotbook', [check('strength').isNumeric(), check('datetime').isString(), check('note').notEmpty()], callControllers.slotbook);
+router.post('/slotbook', [check('strength').isNumeric(), check('datetime').isNumeric(), check('note').notEmpty()], callControllers.slotbook);
 
 router.post('/agora/calltoken', [ check('channel').isString(), check('slotid').notEmpty(), check('expiry').isString()] ,nocache, callControllers.getCallToken);
 
