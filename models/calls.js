@@ -10,7 +10,7 @@ const Schema = mongoose.Schema;
 
 const scheduleCall = new Schema({
     channel: { type: String },
-    talkerId: { type: Schema.Types.ObjectId, required: true, unique: true },
+    talkerId: { type: Schema.Types.ObjectId, required: true },
     listenerId: { type: Schema.Types.ObjectId, default: '63d776c609c5abbd36488bdf' },
     dateTime: { type: Number, required: true },
     strength: { type: Number, required: true },

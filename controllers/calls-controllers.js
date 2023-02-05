@@ -19,6 +19,15 @@ const getCallToken = async (req, res, next) => {
         
         const { channel, slotid, expiry } = req.body;
         const callslot = await callSchema.findById(slotid);
+
+        if(!callslot || callslot.expire ) {
+            return next(new HttpError(
+                'No valid slot found, Try Again',
+                false,
+                404
+            ));
+        }
+
         if(callslot.agoraToken) {
             return res.json({message: "Token Already Created", success: true, rtctoken: callslot.agoraToken});
         }
@@ -74,7 +83,7 @@ const slotbook = async (req, res, next) => {
         }
         const { strength, datetime, note } = req.body;
         const slot = await callSchema.findOne({talkerId: req.userData.userId});
-        if(slot){
+        if(slot && !slot.expire){
             return next(new HttpError('Already Booked!', false, 400));
         }
         await new callSchema({talkerId: req.userData.userId, strength: strength, dateTime: datetime, note: note}).save();
