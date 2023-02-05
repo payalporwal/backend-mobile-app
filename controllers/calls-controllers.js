@@ -99,8 +99,15 @@ const slotbook = async (req, res, next) => {
 const getslotsfortalk = async (req, res, next) => {
     try{
         const slots = await callSchema.findOne({talkerId: req.userData.userId});
-    
-        if(!slots || slots.expire ) {
+        
+        if(!slots ) {
+            return next(new HttpError(
+                'No valid slot found, Try Again',
+                false,
+                404
+            ));
+        }
+        if(slots.expire ) {
             return next(new HttpError(
                 'No valid slot found, Try Again',
                 false,
@@ -141,7 +148,14 @@ const getslotsforhear = async(req, res, next) => {
     try{
         const slots = await callSchema.findOne({listenerId: req.userData.userId});
     
-        if(!slots || slots.expire ) {
+        if(!slots ) {
+            return next(new HttpError(
+                'No valid slot found, Try Again',
+                false,
+                404
+            ));
+        }
+        if(slots.expire ) {
             return next(new HttpError(
                 'No valid slot found, Try Again',
                 false,
