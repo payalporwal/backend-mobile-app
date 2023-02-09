@@ -150,7 +150,7 @@ const gethearsideslots = async (req, res, next) => {
 
 const cuttingCall = async(req, res, next ) => {
     try{
-        await callSchema.findByIdAndUpdate(req.body.slotid, {expire: true});
+        await callSchema.findByIdAndUpdate(req.body.slotid, {expire: true, agoraToken: null});
         res.status(200).json({message: "Call Ended", success: true});
     } catch(err){
         return next(new HttpError('Something went wrong, Try Again', false, 500));
