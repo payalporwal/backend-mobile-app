@@ -18,9 +18,9 @@ const getCallToken = async (req, res, next) => {
     try{
         
         const { channel, slotid, expiry } = req.body;
-        const callslot = await callSchema.findById(slotid);
+        const callslot = await callSchema.findOne({id:slotid, expire: false});
 
-        if(!callslot || callslot.expire ) {
+        if(!callslot) {
             return next(new HttpError(
                 'No valid slot found, Try Again',
                 false,
