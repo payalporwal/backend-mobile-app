@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const encrypt = require('mongoose-encryption');
+const calls = require('./calls');
 //const passportLocalMongoose = require("passport-local-mongoose");
 //const findOrCreate = require("mongoose-findorcreate");
 
@@ -22,6 +23,7 @@ const userSchema = new mongoose.Schema({
     completedDoc: { type: Boolean, default: false},
     devicetoken: { type: String },
     active: { type: Boolean, require: true, default: true },
+    hearcalls: { type: mongoose.Types.ObjectId, ref: 'callSchedule'},
     createdAt : { type: Date, default : timeStamp },
     updatedAt: { type: Date, default : timeStamp }
 });
