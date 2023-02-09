@@ -8,10 +8,6 @@ current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
 const Schema = mongoose.Schema;
 
 const OTPschema = new Schema({
-    userId: {
-		type: Schema.Types.ObjectId,
-		required: true,
-	},
 	otp: {
 		type: String,
 		required: true,
