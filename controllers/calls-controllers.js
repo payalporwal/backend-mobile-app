@@ -77,17 +77,29 @@ const slotbook = async (req, res, next) => {
     try{
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-        return next(
-            new HttpError('Invalid inputs passed, Recheck', false, 422)
-        );
+            return next(
+                new HttpError('Invalid inputs passed, Recheck', false, 422)
+            );
         }
-        const { strength, datetime, note } = req.body;
-        const slot = await callSchema.findOne({talkerId: req.userData.userId});
-        if(slot && !slot.expire){
-            return next(new HttpError('Already Booked!', false, 400));
+
+        const user = await User.findById(req.userData.userId);
+        const { strength, date, note } = req.body;
+        const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
+            path: 'talkerUser',
+            select: 'username age gender'
+        });
+        if( slots.length !== 0 ){
+            //console.log(slots);
+            return next(new HttpError('Already Booked', false, 422));
         }
-        await new callSchema({talkerId: req.userData.userId, strength: strength, dateTime: datetime, note: note}).save();
         
+        const newcalls =  new callSchema({talkerUser: user ,strength: strength, date: date, note: note});
+        await newcalls.save();
+        newcalls.populate('talkerUser');
+        
+        user.calls = newcalls;
+        await user.save();
+        user.populate('hearcalls');
         res.status(201).json({message: 'Slot Booked!', success: true});
         
     } catch (err) {
@@ -96,88 +108,42 @@ const slotbook = async (req, res, next) => {
     }
 };
 
-const getslotsfortalk = async (req, res, next) => {
+const gettalksideslots = async (req, res, next) => {
     try{
-        const slots = await callSchema.findOne({talkerId: req.userData.userId});
+        const user = await User.findById(req.userData.userId);
         
-        if(!slots ) {
-            return next(new HttpError(
-                'No valid slot found, Try Again',
-                false,
-                404
-            ));
-        }
-        if(slots.expire ) {
-            return next(new HttpError(
-                'No valid slot found, Try Again',
-                false,
-                404
-            ));
-        }
-
-        const healr = await User.findById(slots.listenerId);
-        if(!healr){
-            res.json({
-                message: 'Your Slots',
-                success: true,
-                slotid: slots.id,
-                datetime: slots.dateTime,
-                healer: null
-            });
-        }
+        const slots = await callSchema.find({talkerUser: user}).populate({
+            path: 'talkerUser',
+            select: 'username age gender'
+        }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
 
         res.json({
             message: 'Your Slots',
             success: true,
-            slotid: slots.id,
-            datetime: slots.dateTime,
-            healer: {
-                name: healr.username,
-                age: healr.age,
-                gender: healr.gender
-            }
+            slots
         });
-
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 };
 
-const getslotsforhear = async(req, res, next) => {
+const gethearsideslots = async (req, res, next) => {
     try{
-        const slots = await callSchema.findOne({listenerId: req.userData.userId});
-    
-        if(!slots ) {
-            return next(new HttpError(
-                'No valid slot found, Try Again',
-                false,
-                404
-            ));
-        }
-        if(slots.expire ) {
-            return next(new HttpError(
-                'No valid slot found, Try Again',
-                false,
-                404
-            ));
-        }
-        const speaker = await User.findById(slots.talkerId);
+        const user = await User.findById(req.userData.userId);
+        
+        const slots = await callSchema.find({listenerUser: user}).populate({
+            path: 'listenerUser',
+            select: 'username age gender'
+        }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
 
         res.json({
             message: 'Your Slots',
             success: true,
-            slotid: slots.id,
-            datetime: slots.dateTime,
-            note: slots.note,
-            talker: {
-                name: speaker.username,
-                age: speaker.age,
-                gender: speaker.gender
-            }
-        })
-
+            slots
+        });
     } catch (err) {
+        console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 };
@@ -193,6 +159,6 @@ const cuttingCall = async(req, res, next ) => {
 
 exports.getCallToken = getCallToken;
 exports.slotbook = slotbook;
-exports.getslotsforhear = getslotsforhear;
-exports.getslotsfortalk = getslotsfortalk;
+exports.gettalksideslots = gettalksideslots;
+exports.gethearsideslots = gethearsideslots;
 exports.cuttingCall = cuttingCall;

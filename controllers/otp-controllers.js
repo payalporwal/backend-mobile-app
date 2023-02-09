@@ -49,7 +49,7 @@ const generateOTP = async (req, res, next) => {
         
         //saving to db
 
-        await new OTPmodel({userId: user.id, otp: hashedotp, email: email, otptype: type}).save();
+        await new OTPmodel({ otp: hashedotp, email: email, otptype: type}).save();
         console.log('saved');
 
         //send email as per need

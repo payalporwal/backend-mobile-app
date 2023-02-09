@@ -23,7 +23,7 @@ console.log(`Node Environment is ${process.env.NODE_ENV}`);
 
 
 const app = express();
-
+app.use(express.json());
 app.use(bodyParser.json());
 
 /*
