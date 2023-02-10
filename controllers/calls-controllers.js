@@ -18,9 +18,9 @@ const getCallToken = async (req, res, next) => {
     try{
         
         const { channel, slotid, expiry } = req.body;
-        const callslot = await callSchema.findById(slotid);
+        const callslot = await callSchema.findOne({id:slotid, expire: false});
 
-        if(!callslot || callslot.expire ) {
+        if(!callslot) {
             return next(new HttpError(
                 'No valid slot found, Try Again',
                 false,
@@ -112,7 +112,7 @@ const gettalksideslots = async (req, res, next) => {
     try{
         const user = await User.findById(req.userData.userId);
         
-        const slots = await callSchema.find({talkerUser: user}).populate({
+        const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
             path: 'talkerUser',
             select: 'username age gender'
         }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
@@ -132,7 +132,7 @@ const gethearsideslots = async (req, res, next) => {
     try{
         const user = await User.findById(req.userData.userId);
         
-        const slots = await callSchema.find({listenerUser: user}).populate({
+        const slots = await callSchema.find({listenerUser: user,  expire: false}).populate({
             path: 'listenerUser',
             select: 'username age gender'
         }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
@@ -150,7 +150,10 @@ const gethearsideslots = async (req, res, next) => {
 
 const cuttingCall = async(req, res, next ) => {
     try{
-        await callSchema.findByIdAndUpdate(req.body.slotid, {expire: true});
+        const callslot = await callSchema.findOne({id:req.body.slotid, expire: false});
+        callslot.expire = true;
+        callslot.agoraToken = null;
+        await callslot.save();
         res.status(200).json({message: "Call Ended", success: true});
     } catch(err){
         return next(new HttpError('Something went wrong, Try Again', false, 500));
