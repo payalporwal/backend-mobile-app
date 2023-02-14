@@ -94,8 +94,18 @@ https
     console.log(`Server running on https://${config.HOST}:${config.PORT}`);
 })
 } else if(process.env.NODE_ENV=== 'developement'){
-  app.listen(config.PORT, config.HOST, () => {
-    console.log(`Server running on http://${config.HOST}:${config.PORT}`);
+  https
+  .createServer(
+		// Provide the private and public key to the server by reading each
+		// file's content with the readFileSync() method.
+    {
+      key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.crt"),
+      cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.key"),
+    },
+    app
+  )
+  .listen(config.PORT, config.HOST, () => {
+    console.log(`Server running on https://${config.HOST}:${config.PORT}`);
 })
 } else {
     app.listen(config.PORT, config.HOST, () => {
