@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs');
 const UserToken = require('../models/token');
 const HttpError = require('../utils/http-error');
 const User = require('../models/user');
-const UserAppResponse = require('../models/support');
+const supports = require('../models/support');
+const feedbacks = require('../models/feedback');
 
 
 require('dotenv').config();
@@ -38,7 +39,9 @@ const getUserbyId = async (req, res, next) => {
             phone: user.phone,
             age: user.age,
             gender: user.gender,
-            slideno: user.slideno
+            verified: user.verified,
+            slideno: user.slideno,
+            docComplete: user.completedDoc
         });
     } catch (err) {
         const error = new HttpError(
@@ -70,7 +73,9 @@ const getUserbyEmail = async (req, res, next) => {
             phone: user.phone,
             age: user.age,
             gender: user.gender,
-            slideno: user.slideno
+            verified: user.verified,
+            slideno: user.slideno,
+            docComplete: user.completedDoc
         });
     } catch (err) {
         const error = new HttpError(
@@ -209,11 +214,12 @@ const deleteUser = async (req, res, next) => {
 //support and feedback apis
 const supportRequest = async (req, res, next) =>{
     try{
-        const {text, type} = req.body;
+        const { text } = req.body;
         if(!text) {
             return next(HttpError('Write Something and try again', false, 400));
         }
-        await new UserAppResponse({userId: req.userData.userId, email: req.userData.email, content: text, responsetype: type}).save();
+        const user = await User.findById(req.userData.userId);
+        await new supports({userId: user.id, username: user.username, email: user.email, text: text }).save();
         res.status(201).json({message: 'Request sent, Will get back to you soon', success: true});
     } catch (err){
         return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);
@@ -223,11 +229,12 @@ const supportRequest = async (req, res, next) =>{
 
 const feedback = async (req, res, next) =>{
     try{
-        const {text, type} = req.body;
-        if(!text) {
+        const { text, rating } = req.body;
+        if(!text && !rating) {
             return next(HttpError('Write Something and try again', false, 400));
         }
-        await new UserAppResponse({userId: req.userData.userId, email: req.userData.email, content: text, responsetype: type}).save();
+        const user = await User.findById(req.userData.userId);
+        await new feedbacks({username: user.username, age: user.age, gender: user.gender, email: user.email, text: text, rating: rating}).save();
         res.status(201).json({message: 'Thankyou for your feeback, it is valuable for us!', success: true});
     } catch (err){
         return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);

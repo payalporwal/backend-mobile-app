@@ -15,15 +15,9 @@ router.get('/dashboard', processControllers.getUserbyId);
 
 router.post('/slideupdate', [check('slideno').isNumeric(), check('completedDoc').isBoolean()] ,processControllers.updateSlide);
 
-router.post('/supportrequest', [
-    check('text').notEmpty(), 
-    check('type').notEmpty(), 
-], processControllers.supportRequest);
+router.post('/supportrequest', processControllers.supportRequest);
 
-router.post('/feedback', [
-    check('text').notEmpty(), 
-    check('type').notEmpty(), 
-], processControllers.feedback);
+router.post('/feedback', processControllers.feedback);
 
 router.patch('/update', [
     check('username').notEmpty(), 

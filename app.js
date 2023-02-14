@@ -79,7 +79,7 @@ app.use((error, req, res, next) => {
 });
 
 
-if(process.env.NODE_ENV!== 'test'){
+if(process.env.NODE_ENV=== 'production'){
 https
   .createServer(
 		// Provide the private and public key to the server by reading each
@@ -87,6 +87,20 @@ https
     {
       key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.key"),
       cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.crt"),
+    },
+    app
+  )
+  .listen(config.PORT, config.HOST, () => {
+    console.log(`Server running on https://${config.HOST}:${config.PORT}`);
+})
+} else if(process.env.NODE_ENV=== 'test'){
+  https
+  .createServer(
+		// Provide the private and public key to the server by reading each
+		// file's content with the readFileSync() method.
+    {
+      key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.key"),
+      cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.crt"),
     },
     app
   )
