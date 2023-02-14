@@ -93,14 +93,14 @@ https
   .listen(config.PORT, config.HOST, () => {
     console.log(`Server running on https://${config.HOST}:${config.PORT}`);
 })
-} else if(process.env.NODE_ENV=== 'developement'){
+} else if(process.env.NODE_ENV=== 'test'){
   https
   .createServer(
 		// Provide the private and public key to the server by reading each
 		// file's content with the readFileSync() method.
     {
-      key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.crt"),
-      cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.key"),
+      key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.key"),
+      cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/pacetest.ssl.d/testpace.paceful.org.crt"),
     },
     app
   )
