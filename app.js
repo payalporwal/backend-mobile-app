@@ -79,7 +79,7 @@ app.use((error, req, res, next) => {
 });
 
 
-if(process.env.NODE_ENV!== 'test'){
+if(process.env.NODE_ENV=== 'production'){
 https
   .createServer(
 		// Provide the private and public key to the server by reading each
@@ -92,6 +92,10 @@ https
   )
   .listen(config.PORT, config.HOST, () => {
     console.log(`Server running on https://${config.HOST}:${config.PORT}`);
+})
+} else if(process.env.NODE_ENV=== 'developement'){
+  app.listen(config.PORT, config.HOST, () => {
+    console.log(`Server running on http://${config.HOST}:${config.PORT}`);
 })
 } else {
     app.listen(config.PORT, config.HOST, () => {
