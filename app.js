@@ -2,8 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const https = require('https');
-//const session = require('express-session');
-//const passport = require('passport');
 
 
 const authRouter = require('./routes/auth-routes');
@@ -12,7 +10,6 @@ const tokenRouter = require('./routes/token-routes');
 const otpRouter = require('./routes/otp-route');
 const notiRouter = require('./routes/notification');
 const callsRouter = require('./routes/call-routes');
-//const googleRouter = require('./routes/googleauth-route');
 
 const HttpError = require('./utils/http-error');
 
