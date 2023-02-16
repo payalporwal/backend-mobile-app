@@ -76,7 +76,6 @@ app.use((error, req, res, next) => {
     res.json({message: error.message || 'Unknown Error!!', success: error.success});
 });
 
-
 if(process.env.NODE_ENV=== 'production'){
 https
   .createServer(
@@ -110,3 +109,4 @@ https
         console.log(`Server running on http://${config.HOST}:${config.PORT}`);
     })
 }
+
