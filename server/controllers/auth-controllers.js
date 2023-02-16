@@ -4,9 +4,9 @@ const { validationResult } = require('express-validator');
 require('dotenv').config();
 
 
-const HttpError = require('../utils/http-error');
+const HttpError = require('../../utils/http-error');
 const User = require('../models/user');
-const generateTokens = require('../utils/generate-token');
+const generateTokens = require('../../utils/generate-token');
 
 const register = async (req, res, next) => {
     const errors = validationResult(req);

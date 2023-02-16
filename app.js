@@ -4,12 +4,12 @@ const fs = require('fs');
 const https = require('https');
 
 
-const authRouter = require('./routes/auth-routes');
-const processRouter = require('./routes/process-routes');
-const tokenRouter = require('./routes/token-routes');
-const otpRouter = require('./routes/otp-route');
-const notiRouter = require('./routes/notification');
-const callsRouter = require('./routes/call-routes');
+const authRouter = require('./server/routes/auth-routes');
+const processRouter = require('./server/routes/process-routes');
+const tokenRouter = require('./server/routes/token-routes');
+const otpRouter = require('./server/routes/otp-route');
+const notiRouter = require('./server/routes/notification');
+const callsRouter = require('./server/routes/call-routes');
 //const googleRouter = require('./routes/googleauth-route');
 
 const HttpError = require('./utils/http-error');

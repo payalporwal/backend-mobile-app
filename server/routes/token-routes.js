@@ -1,9 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const HttpError = require('../utils/http-error');
+const HttpError = require('../../utils/http-error');
 const UserToken = require('../models/token');
 const User = require('../models/user');
-const generateTokens = require('../utils/generate-token');
+const generateTokens = require('../../utils/generate-token');
 
 require('dotenv').config();
 

@@ -1,9 +1,8 @@
 const { validationResult } = require('express-validator');
 const {RtcTokenBuilder, RtcRole} = require('agora-access-token');
 
-const HttpError = require('../utils/http-error');
+const HttpError = require('../../utils/http-error');
 const User = require('../models/user');
-//const selectUser = require('../utils/select-user');
 const callSchema = require('../models/calls');
 
 require('dotenv').config();
