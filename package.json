@@ -4,8 +4,8 @@
   "description": "mental health application - backend",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test nodemon app.js > app_err.log > app_log.log",
-    "start": "NODE_ENV=production nodemon app.js > app_err.log > app_log.log",
+    "test": "NODE_ENV=test nodemon app.js",
+    "start": "NODE_ENV=production nodemon app.js ",
     "dev": "NODE_ENV=development nodemon app.js"
   },
   "keywords": [
