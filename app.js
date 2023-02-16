@@ -83,9 +83,9 @@ https
 		// Provide the private and public key to the server by reading each
 		// file's content with the readFileSync() method.
     {
-      key: fs.readFileSync('key.pem'),
-      cert: fs.readFileSync('cert.pem')
-  },
+      key: fs.readFileSync(  process.env.SSL_DIRECTORY +  "backend.ssl.d/server.paceful.org.key"),
+      cert: fs.readFileSync(  process.env.SSL_DIRECTORY + "backend.ssl.d/server.paceful.org.crt"),
+    },
     app
   )
   .listen(config.PORT, config.HOST, () => {
@@ -97,8 +97,8 @@ https
 		// Provide the private and public key to the server by reading each
 		// file's content with the readFileSync() method.
     {
-      key: fs.readFileSync("../../../../../etc/nginx-rc/conf.d/server-test.ssl.d/test.paceful.org.key"),
-      cert: fs.readFileSync("../../../../../etc/nginx-rc/conf.d/server-test.ssl.d/test.paceful.org.crt"),
+      key: fs.readFileSync( process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.key"),
+      cert: fs.readFileSync(  process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.crt"),
     },
     app
   )
