@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 require('dotenv').config();
 
-const HttpError = require('../utils/http-error');
+const HttpError = require('../../utils/http-error');
 const OTPmodel = require('../models/otp');
 const User = require('../models/user');
 
@@ -55,12 +55,12 @@ const generateOTP = async (req, res, next) => {
         //send email as per need
         if(type){
             if(type=="Register"){
-              const {message, subject_mail} = require('../utils/email/register-mail');
+              const {message, subject_mail} = require('../../utils/email/register-mail');
               email_message=message(OTP, user.username)
               email_subject=subject_mail
             }
             else if(type=="Reset Password"){
-              const {message, subject_mail} = require('../utils/email/reset-mail');
+              const {message, subject_mail} = require('../../utils/email/reset-mail');
               email_message=message(OTP, user.username)
               email_subject=subject_mail
             }

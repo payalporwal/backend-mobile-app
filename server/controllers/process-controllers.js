@@ -2,7 +2,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 
 const UserToken = require('../models/token');
-const HttpError = require('../utils/http-error');
+const HttpError = require('../../utils/http-error');
 const User = require('../models/user');
 const supports = require('../models/support');
 const feedbacks = require('../models/feedback');

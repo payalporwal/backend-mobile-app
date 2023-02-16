@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const  admin = require('../utils/firebase-config');
+const  admin = require('../../utils/firebase-config');
 
 
 const notification_options = {

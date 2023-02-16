@@ -4,12 +4,13 @@ const fs = require('fs');
 const https = require('https');
 
 
-const authRouter = require('./routes/auth-routes');
-const processRouter = require('./routes/process-routes');
-const tokenRouter = require('./routes/token-routes');
-const otpRouter = require('./routes/otp-route');
-const notiRouter = require('./routes/notification');
-const callsRouter = require('./routes/call-routes');
+const authRouter = require('./server/routes/auth-routes');
+const processRouter = require('./server/routes/process-routes');
+const tokenRouter = require('./server/routes/token-routes');
+const otpRouter = require('./server/routes/otp-route');
+const notiRouter = require('./server/routes/notification');
+const callsRouter = require('./server/routes/call-routes');
+//const googleRouter = require('./routes/googleauth-route');
 
 const HttpError = require('./utils/http-error');
 
@@ -76,35 +77,36 @@ app.use((error, req, res, next) => {
 });
 
 if(process.env.NODE_ENV=== 'production'){
+https
+  .createServer(
+		// Provide the private and public key to the server by reading each
+		// file's content with the readFileSync() method.
+    {
+      key: fs.readFileSync(  process.env.SSL_DIRECTORY +  "backend.ssl.d/server.paceful.org.key"),
+      cert: fs.readFileSync(  process.env.SSL_DIRECTORY + "backend.ssl.d/server.paceful.org.crt"),
+    },
+    app
+  )
+  .listen(config.PORT, config.HOST, () => {
+    console.log(`Server running on https://${config.HOST}:${config.PORT}`);
+})
+} else if(process.env.NODE_ENV=== 'test'){
   https
-    .createServer(
-      // Provide the private and public key to the server by reading each
-      // file's content with the readFileSync() method.
-      {
-        key: fs.readFileSync(  process.env.SSL_DIRECTORY +  "backend.ssl.d/server.paceful.org.key"),
-        cert: fs.readFileSync(  process.env.SSL_DIRECTORY + "backend.ssl.d/server.paceful.org.crt"),
-      },
-      app
-    )
-    .listen(config.PORT, config.HOST, () => {
-      console.log(`Server running on https://${config.HOST}:${config.PORT}`);
-  })
-  } else if(process.env.NODE_ENV=== 'test'){
-    https
-    .createServer(
-      // Provide the private and public key to the server by reading each
-      // file's content with the readFileSync() method.
-      {
-        key: fs.readFileSync( process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.key"),
-        cert: fs.readFileSync(  process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.crt"),
-      },
-      app
-    )
-    .listen(config.PORT, config.HOST, () => {
-      console.log(`Server running on https://${config.HOST}:${config.PORT}`);
-  })
-  } else {
-      app.listen(config.PORT, config.HOST, () => {
-          console.log(`Server running on http://${config.HOST}:${config.PORT}`);
-      })
-  }
+  .createServer(
+		// Provide the private and public key to the server by reading each
+		// file's content with the readFileSync() method.
+    {
+      key: fs.readFileSync( process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.key"),
+      cert: fs.readFileSync(  process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.crt"),
+    },
+    app
+  )
+  .listen(config.PORT, config.HOST, () => {
+    console.log(`Server running on https://${config.HOST}:${config.PORT}`);
+})
+} else {
+    app.listen(config.PORT, config.HOST, () => {
+        console.log(`Server running on http://${config.HOST}:${config.PORT}`);
+    })
+}
+
