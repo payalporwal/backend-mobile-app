@@ -83,8 +83,8 @@ https
 		// Provide the private and public key to the server by reading each
 		// file's content with the readFileSync() method.
     {
-      key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.key"),
-      cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.crt"),
+      key: fs.readFileSync("../../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.key"),
+      cert: fs.readFileSync("../../../../../etc/nginx-rc/conf.d/backend.ssl.d/server.paceful.org.crt"),
     },
     app
   )
@@ -97,8 +97,8 @@ https
 		// Provide the private and public key to the server by reading each
 		// file's content with the readFileSync() method.
     {
-      key: fs.readFileSync("../../../../etc/nginx-rc/conf.d/server-test.ssl.d/test.paceful.org.key"),
-      cert: fs.readFileSync("../../../../etc/nginx-rc/conf.d/server-test.ssl.d/test.paceful.org.crt"),
+      key: fs.readFileSync("../../../../../etc/nginx-rc/conf.d/server-test.ssl.d/test.paceful.org.key"),
+      cert: fs.readFileSync("../../../../../etc/nginx-rc/conf.d/server-test.ssl.d/test.paceful.org.crt"),
     },
     app
   )
