@@ -18,6 +18,7 @@ const timeStamp = new Date(Date.UTC(current.getFullYear(),
     current.getMinutes(),current.getSeconds(), current.getMilliseconds())
 );
 
+
 //access data apis
 exports.getUserbyId = async (req, res, next) => {
     try{
@@ -32,16 +33,17 @@ exports.getUserbyId = async (req, res, next) => {
             
             return next(error);
         }
+
         res.status(200).json({
             message: `Access as ${user.username}`,
             success: true,
-            profile: user.profile,
             id: user.id,
             name: user.username,
             email: user.email,
             phone: user.phone,
             age: user.age,
             gender: user.gender,
+            profile: user.profile.image,
             verified: user.verified,
             slideno: user.slideno,
             docComplete: user.completedDoc
@@ -112,7 +114,6 @@ exports.updateUser = async (req, res, next) => {
         const image = {
             image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
-            url: `https://${config.HOST}:${config.PORT}/profile/${req.file.path}`
         }
         user.profile = image;
         user.username = username;
@@ -241,14 +242,12 @@ exports.uploaddocs = async (req, res, next) => {
         const image = {
             image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
-            url: `https://${config.HOST}:${config.PORT}/verification/${req.file.path}`,
         }
-       
         
         user.verifydoc = image;
         await user.save();
        // res.send(final_img.data);
-        res.json({message: 'done', success: true});
+        res.json({message: 'Successfully Uploaded, will revert back to you soon', success: true});
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong, Couldn\'t upload!', false, 500));
