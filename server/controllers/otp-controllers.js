@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 require('dotenv').config();
@@ -7,6 +6,7 @@ require('dotenv').config();
 const HttpError = require('../../utils/http-error');
 const OTPmodel = require('../models/otp');
 const User = require('../models/user');
+const sendmail = require('../../utils/email/send');
 
 function otpfunc() {
     otplist = []
@@ -53,51 +53,23 @@ const generateOTP = async (req, res, next) => {
         console.log('saved');
 
         //send email as per need
-        if(type){
-            if(type=="Register"){
-              const {message, subject_mail} = require('../../utils/email/register-mail');
-              email_message=message(OTP, user.username)
-              email_subject=subject_mail
-            }
-            else if(type=="Reset Password"){
-              const {message, subject_mail} = require('../../utils/email/reset-mail');
-              email_message=message(OTP, user.username)
-              email_subject=subject_mail
-            }
-            else{
-              return next(new HttpError('Invalid Request!', false, 400));
-            }
-          }
-        
-        //connection to send mails
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            secure: true,
-            auth: {
-                user: process.env.EMAIL_ADDRESS,
-                pass: process.env.EMAIL_PASSWORD
-            },
 
-        });
+        if(type=="Register"){
+            const {message, subject_mail} = require('../../utils/email/register-mail');
+            email_message=message(OTP, user.username)
+            email_subject=subject_mail
+        }
+        else if(type=="Reset Password"){
+            const {message, subject_mail} = require('../../utils/email/reset-mail');
+            email_message=message(OTP, user.username)
+            email_subject=subject_mail
+        }
+        else{
+            return next(new HttpError('Invalid Request!', false, 400));
+        }
 
-        //set email
-        const mailOptions = {
-            from: `"No-Reply PACE"<${process.env.EMAIL_ADDRESS}>`,
-            to: `${email}`,
-            subject: email_subject,
-            text: email_message ,
-          };
-      
-        await transporter.verify();
+        await sendmail(email_message, email_subject, email);
 
-        //send mail
-        transporter.sendMail(mailOptions, (err, response) => {
-            if (err) {
-                return next(new HttpError('Something went wrong, Try Again', false, 500));
-            } else {
-                console.log("Server is ready to take our messages");
-            }
-        });
         res.status(201).json({
             message: 'OTP sent on Email!',
             success: true

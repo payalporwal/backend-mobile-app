@@ -2,7 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const https = require('https');
-
+const cors =  require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const path = require('path');
 
 const authRouter = require('./server/routes/auth-routes');
 const processRouter = require('./server/routes/process-routes');
@@ -10,7 +15,6 @@ const tokenRouter = require('./server/routes/token-routes');
 const otpRouter = require('./server/routes/otp-route');
 const notiRouter = require('./server/routes/notification');
 const callsRouter = require('./server/routes/call-routes');
-//const googleRouter = require('./routes/googleauth-route');
 
 const HttpError = require('./utils/http-error');
 
@@ -24,33 +28,28 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 
-/*
-app.use(session({
-  secret:"My user database secret.",
-  resave:false,
-  saveUninitialized:false
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+app.set('view engine', 'ejs');
 
-*/
+app.use(cors());
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    res.setHeader("Access-Control-Allow-Credentials", 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
-    next();
-});
+// Allow Cross-Origin requests
+app.use(cors());
 
-// google auth
-//app.use('/', googleRouter);
+// Set security HTTP headers
+app.use(helmet());
 
+// Data sanitization against Nosql query injection
+app.use(mongoSanitize());
 
-//for app login signup and others
+// Data sanitization against XSS(clean user input from malicious HTML code)
+app.use(xss());
+
+// Prevent parameter pollution
+app.use(hpp());
+
+app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+
+//for app login signup 
 app.use('/api/users',authRouter);
 
 //web login signup
@@ -69,9 +68,14 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-    if(res.headerSent) {
-        return next(error);
-    }
+  if (req.file) {
+    fs.unlink(req.file.path, err => {
+      console.log(err);
+    });
+  }
+  if (res.headerSent) {
+    return next(error);
+  }
     res.status(error.code || 500);
     res.json({message: error.message || 'Unknown Error!!', success: error.success});
 });
