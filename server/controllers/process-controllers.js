@@ -141,7 +141,16 @@ exports.updateUser = async (req, res, next) => {
             );
             return next(error);
         }
-        user.profile = `https://${config.HOST}:${config.PORT}/`+ req.file.path;
+        const path = req.file.path;
+        if (!path ) {
+            const error = new HttpError(
+                'No file picked, Try Again',
+                false,
+                422
+            );
+            return next(error);
+        }
+        user.profile = `https://${config.HOST}:${config.PORT}/`+ path;
         user.username = username;
         user.phone = phone;
         user.age = age;
@@ -264,7 +273,16 @@ exports.uploaddocs = async (req, res, next) => {
             );
             return next(error);
         }
-        user.verifydoc = `https://${config.HOST}:${config.PORT}/`+ req.file.path;
+        const path = req.file.path;
+        if (!path ) {
+            const error = new HttpError(
+                'No file picked, Try Again',
+                false,
+                422
+            );
+            return next(error);
+        }
+        user.verifydoc = `https://${config.HOST}:${config.PORT}/`+ path;
         await user.save();
         res.json({message: `Uploaded Successfully `, success: true, doc: user.verifydoc});
     } catch (err) {
