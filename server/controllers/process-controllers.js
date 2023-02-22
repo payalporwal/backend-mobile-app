@@ -133,6 +133,14 @@ exports.updateUser = async (req, res, next) => {
         }}
 
         const user = await User.findById(userId);
+        if(!user) {
+            const error = new HttpError(
+                'No valid user found, Try Again',
+                false,
+                404
+            );
+            return next(error);
+        }
         user.profile = `https://${config.HOST}:${config.PORT}/`+ req.file.path;
         user.username = username;
         user.phone = phone;
@@ -248,6 +256,14 @@ exports.feedback = async (req, res, next) =>{
 exports.uploaddocs = async (req, res, next) => {
     try{
         const user = await User.findById(req.userData.userId);
+        if(!user) {
+            const error = new HttpError(
+                'No valid user found, Try Again',
+                false,
+                404
+            );
+            return next(error);
+        }
         user.verifydoc = `https://${config.HOST}:${config.PORT}/`+ req.file.path;
         await user.save();
         res.json({message: `Uploaded Successfully `, success: true, doc: user.verifydoc});
