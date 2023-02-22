@@ -143,16 +143,12 @@ exports.updateUser = async (req, res, next) => {
             );
             return next(error);
         }
-        const path = req.file.path;
-        if (!path ) {
-            const error = new HttpError(
-                'No file picked, Try Again',
-                false,
-                422
-            );
-            return next(error);
+        const image = {
+            image: fs.readFileSync(path.join(req.file.path)),
+            contentType: req.file.mimetype,
+            url: `https://${config.HOST}:${config.PORT}/${req.file.path}`
         }
-        user.profile = `https://${config.HOST}:${config.PORT}/`+ path;
+        user.profile = image;
         user.username = username;
         user.phone = phone;
         user.age = age;
@@ -284,15 +280,16 @@ exports.uploaddocs = async (req, res, next) => {
         }; */
 
         const image = {
-            data: fs.readFileSync(path.join(req.file.path)),
-            contentType: req.file.mimetype
+            image: fs.readFileSync(path.join(req.file.path)),
+            contentType: req.file.mimetype,
+            url: `https://${config.HOST}:${config.PORT}/${req.file.path}`,
         }
        
         
         user.verifydoc = image;
         await user.save();
        // res.send(final_img.data);
-        res.json({message: 'done', success: true, doc: `https://${config.HOST}:${config.PORT}/`+ req.file.path});
+        res.json({message: 'done', success: true});
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong, Couldn\'t upload!', false, 500));
