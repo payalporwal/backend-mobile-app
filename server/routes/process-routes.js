@@ -10,8 +10,6 @@ const router = express.Router();
 router.use(checkAuth);
 
 
-router.get('/email', check('email').isEmail(), processControllers.getUserbyEmail);
-
 router.get('/dashboard', processControllers.getUserbyId);
 
 router.post('/slideupdate', [check('slideno').isNumeric(), check('completedDoc').isBoolean()] ,processControllers.updateSlide);

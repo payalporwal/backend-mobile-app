@@ -2,7 +2,6 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const config =  require('../../config.js');
 const fs = require('fs');
-const path = require('path');
 
 const UserToken = require('../models/token');
 const HttpError = require('../../utils/http-error');
@@ -57,39 +56,6 @@ exports.getUserbyId = async (req, res, next) => {
     }
 };
 
-exports.getUserbyEmail = async (req, res, next) => {
-    try{
-        const user = await User.findOne({ email: `${req.userData.email}` });
-        if(!user) {
-            const error = new HttpError(
-                'No valid user found, Try Again',
-                false,
-                404
-            );
-            return next(error);
-        }
-        res.status(200).json({
-            message: `Access as ${user.username}`,
-            success: true,
-            id: user.id,
-            name: user.username,
-            email: user.email,
-            phone: user.phone,
-            age: user.age,
-            gender: user.gender,
-            verified: user.verified,
-            slideno: user.slideno,
-            docComplete: user.completedDoc
-        });
-    } catch (err) {
-        const error = new HttpError(
-            'Something went wrong, Try Again!',
-            false,
-            500
-        );
-        return next(error);
-    }
-};
 
 //updation apis 
 exports.updateSlide = async (req, res, next) => {
@@ -144,9 +110,9 @@ exports.updateUser = async (req, res, next) => {
             return next(error);
         }
         const image = {
-            image: fs.readFileSync(path.join(req.file.path)),
+            image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
-            url: `https://${config.HOST}:${config.PORT}/${req.file.path}`
+            url: `https://${config.HOST}:${config.PORT}/profile/${req.file.path}`
         }
         user.profile = image;
         user.username = username;
@@ -271,18 +237,11 @@ exports.uploaddocs = async (req, res, next) => {
             );
             return next(error);
         }
-/*
-        var img = fs.readFileSync(req.file.path);
-        var encode_img = img.toString('base64');
-        var final_img = {
-            contentType: req.file.mimetype,
-            data: new Buffer.from(encode_img,'base64')
-        }; */
 
         const image = {
-            image: fs.readFileSync(path.join(req.file.path)),
+            image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
-            url: `https://${config.HOST}:${config.PORT}/${req.file.path}`,
+            url: `https://${config.HOST}:${config.PORT}/verification/${req.file.path}`,
         }
        
         
