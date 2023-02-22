@@ -1,6 +1,8 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const config =  require('../../config.js');
+const fs = require('fs');
+const path = require('path');
 
 const UserToken = require('../models/token');
 const HttpError = require('../../utils/http-error');
@@ -273,18 +275,24 @@ exports.uploaddocs = async (req, res, next) => {
             );
             return next(error);
         }
-        const path = req.file.path;
-        if (!path ) {
-            const error = new HttpError(
-                'No file picked, Try Again',
-                false,
-                422
-            );
-            return next(error);
+/*
+        var img = fs.readFileSync(req.file.path);
+        var encode_img = img.toString('base64');
+        var final_img = {
+            contentType: req.file.mimetype,
+            data: new Buffer.from(encode_img,'base64')
+        }; */
+
+        const image = {
+            data: fs.readFileSync(path.join(req.file.path)),
+            contentType: req.file.mimetype
         }
-        user.verifydoc = `https://${config.HOST}:${config.PORT}/`+ path;
+       
+        
+        user.verifydoc = image;
         await user.save();
-        res.json({message: `Uploaded Successfully `, success: true, doc: user.verifydoc});
+       // res.send(final_img.data);
+        res.json({message: 'done', success: true, doc: `https://${config.HOST}:${config.PORT}/`+ req.file.path});
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong, Couldn\'t upload!', false, 500));
