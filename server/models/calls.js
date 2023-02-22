@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
-var current = new Date();
-const timeStamp = new Date(Date.UTC(current.getFullYear(), 
-current.getMonth(),current.getDate(),current.getHours(), 
-current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
+const timeStamp = require('../../utils/timestamp');
 
 const Schema = mongoose.Schema;
 

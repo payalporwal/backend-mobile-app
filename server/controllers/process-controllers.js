@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const config =  require('../../config.js');
 
 const UserToken = require('../models/token');
 const HttpError = require('../../utils/http-error');
@@ -17,7 +18,7 @@ const timeStamp = new Date(Date.UTC(current.getFullYear(),
 );
 
 //access data apis
-const getUserbyId = async (req, res, next) => {
+exports.getUserbyId = async (req, res, next) => {
     try{
         const user = await User.findById(req.userData.userId);
     
@@ -33,6 +34,7 @@ const getUserbyId = async (req, res, next) => {
         res.status(200).json({
             message: `Access as ${user.username}`,
             success: true,
+            profile: user.profile,
             id: user.id,
             name: user.username,
             email: user.email,
@@ -53,7 +55,7 @@ const getUserbyId = async (req, res, next) => {
     }
 };
 
-const getUserbyEmail = async (req, res, next) => {
+exports.getUserbyEmail = async (req, res, next) => {
     try{
         const user = await User.findOne({ email: `${req.userData.email}` });
         if(!user) {
@@ -88,7 +90,7 @@ const getUserbyEmail = async (req, res, next) => {
 };
 
 //updation apis 
-const updateSlide = async (req, res, next) => {
+exports.updateSlide = async (req, res, next) => {
     try{
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -110,7 +112,7 @@ const updateSlide = async (req, res, next) => {
     }
 };
 
-const updateUser = async (req, res, next) => {
+exports.updateUser = async (req, res, next) => {
     try{
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -131,6 +133,24 @@ const updateUser = async (req, res, next) => {
         }}
 
         const user = await User.findById(userId);
+        if(!user) {
+            const error = new HttpError(
+                'No valid user found, Try Again',
+                false,
+                404
+            );
+            return next(error);
+        }
+        const path = req.file.path;
+        if (!path ) {
+            const error = new HttpError(
+                'No file picked, Try Again',
+                false,
+                422
+            );
+            return next(error);
+        }
+        user.profile = `https://${config.HOST}:${config.PORT}/`+ path;
         user.username = username;
         user.phone = phone;
         user.age = age;
@@ -150,7 +170,7 @@ const updateUser = async (req, res, next) => {
     }
 };
 
-const changePassword = async (req, res, next) => {
+exports.changePassword = async (req, res, next) => {
     try{
         const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -200,7 +220,7 @@ const changePassword = async (req, res, next) => {
 };
 
 //delete profile 
-const deleteUser = async (req, res, next) => {
+exports.deleteUser = async (req, res, next) => {
     try{
         await User.findByIdAndUpdate(req.userData.userId, {active: false});
         await UserToken.findOneAndDelete({userId: req.userData.userId});
@@ -212,7 +232,7 @@ const deleteUser = async (req, res, next) => {
 };
 
 //support and feedback apis
-const supportRequest = async (req, res, next) =>{
+exports.supportRequest = async (req, res, next) =>{
     try{
         const { text } = req.body;
         if(!text) {
@@ -227,7 +247,7 @@ const supportRequest = async (req, res, next) =>{
     
 };
 
-const feedback = async (req, res, next) =>{
+exports.feedback = async (req, res, next) =>{
     try{
         const { text, rating } = req.body;
         if(!text && !rating) {
@@ -242,11 +262,31 @@ const feedback = async (req, res, next) =>{
     
 };
 
-exports.getUserbyId = getUserbyId;
-exports.getUserbyEmail = getUserbyEmail;
-exports.updateSlide = updateSlide;
-exports.updateUser = updateUser;
-exports.deleteUser = deleteUser;
-exports.changePassword = changePassword;
-exports.supportRequest = supportRequest;
-exports.feedback = feedback;
+exports.uploaddocs = async (req, res, next) => {
+    try{
+        const user = await User.findById(req.userData.userId);
+        if(!user) {
+            const error = new HttpError(
+                'No valid user found, Try Again',
+                false,
+                404
+            );
+            return next(error);
+        }
+        const path = req.file.path;
+        if (!path ) {
+            const error = new HttpError(
+                'No file picked, Try Again',
+                false,
+                422
+            );
+            return next(error);
+        }
+        user.verifydoc = `https://${config.HOST}:${config.PORT}/`+ path;
+        await user.save();
+        res.json({message: `Uploaded Successfully `, success: true, doc: user.verifydoc});
+    } catch (err) {
+        console.log(err);
+        return next(new HttpError('Something went wrong, Couldn\'t upload!', false, 500));
+    }
+};

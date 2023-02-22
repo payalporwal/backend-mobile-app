@@ -2,15 +2,10 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const encrypt = require('mongoose-encryption');
 const calls = require('./calls');
-//const passportLocalMongoose = require("passport-local-mongoose");
-//const findOrCreate = require("mongoose-findorcreate");
 
 const secret = process.env.MONGOOSE_SECRET;
 
-var current = new Date();
-const timeStamp = new Date(Date.UTC(current.getFullYear(), 
-current.getMonth(),current.getDate(),current.getHours(), 
-current.getMinutes(),current.getSeconds(), current.getMilliseconds()));
+const timeStamp = require('../../utils/timestamp');
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
@@ -22,7 +17,7 @@ const userSchema = new mongoose.Schema({
     slideno: { type: Number, default: 0 },
     completedDoc: { type: Boolean, default: false},
     profile: { type: String },
-    verifydoc: { type: String },
+    verifydoc:{ type: String },
     verified: { type:Boolean, default: false },
     devicetoken: { type: String },
     active: { type: Boolean, require: true, default: true },
@@ -33,8 +28,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']});
 userSchema.plugin(uniqueValidator, {message: 'Already taken.'});
-//userSchema.plugin(passportLocalMongoose);
-//userSchema.plugin(findOrCreate);
 
 
 module.exports = mongoose.model('User', userSchema);
