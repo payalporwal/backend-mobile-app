@@ -43,7 +43,7 @@ exports.getUserbyId = async (req, res, next) => {
             phone: user.phone,
             age: user.age,
             gender: user.gender,
-            profile: user.profile.image,
+            profile: user.profile,
             verified: user.verified,
             slideno: user.slideno,
             docComplete: user.completedDoc
@@ -243,7 +243,7 @@ exports.uploaddocs = async (req, res, next) => {
             image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
         }
-        
+        console.log(`http://${config.HOST}:${config.PORT}/${req.file.path}`);
         user.verifydoc = image;
         await user.save();
        // res.send(final_img.data);

@@ -1,6 +1,8 @@
 const multer = require('multer');
 const uuid = require('uuid').v1;
 
+const timeStamp = require('../../utils/timestamp');
+
 const HttpError = require('../../utils/http-error');
 
 const MIME_TYPE_MAP = {
@@ -18,7 +20,7 @@ const fileUpload = multer({
     },
     filename: (req, file, cb) => {
       const ext = MIME_TYPE_MAP[file.mimetype];
-      cb(null, uuid() + '.' + ext);
+      cb(null, timeStamp.toISOString() +'__' + uuid().substring(1,8)  + '.' + ext);
     }
   }),
   fileFilter: (req, file, cb) => {
