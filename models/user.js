@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const encrypt = require('mongoose-encryption');
-const calls = require('./calls');
 
 const secret = process.env.MONGOOSE_SECRET;
 
-const timeStamp = require('../../utils/timestamp');
+const timeStamp = require('../utils/timestamp');
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true },

@@ -5,7 +5,7 @@ require('dotenv').config();
 
 
 const HttpError = require('../../utils/http-error');
-const User = require('../models/user');
+const User = require('../../models/user');
 const generateTokens = require('../../utils/generate-token');
 
 const register = async (req, res, next) => {

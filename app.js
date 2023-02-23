@@ -9,12 +9,11 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const path = require('path');
 
-const authRouter = require('./server/routes/auth-routes');
-const processRouter = require('./server/routes/process-routes');
-const tokenRouter = require('./server/routes/token-routes');
-const otpRouter = require('./server/routes/otp-route');
-const notiRouter = require('./server/routes/notification');
-const callsRouter = require('./server/routes/call-routes');
+const authRouter = require('./routes/server/auth-routes');
+const processRouter = require('./routes/server/process-routes');
+const tokenRouter = require('./routes/server/token-routes');
+const otpRouter = require('./routes/server/otp-route');
+const callsRouter = require('./routes/server/call-routes');
 
 const HttpError = require('./utils/http-error');
 
@@ -60,7 +59,6 @@ app.use('/api/process',processRouter);
 app.use('/api/healercall', callsRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);
-app.use('/api/notification', notiRouter);
 
 app.use((req, res, next) => {
     const error = new HttpError('Could not find this route.', false, 404);

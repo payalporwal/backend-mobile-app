@@ -3,11 +3,11 @@ const bcrypt = require('bcryptjs');
 const config =  require('../../config.js');
 const fs = require('fs');
 
-const UserToken = require('../models/token');
+const UserToken = require('../../models/token');
 const HttpError = require('../../utils/http-error');
-const User = require('../models/user');
-const supports = require('../models/support');
-const feedbacks = require('../models/feedback');
+const User = require('../../models/user');
+const supports = require('../../models/support');
+const feedbacks = require('../../models/feedback');
 
 
 require('dotenv').config();
@@ -162,11 +162,7 @@ exports.changePassword = async (req, res, next) => {
         }
     
         if (!isValidPassword) {
-            const error = new HttpError(
-            'Wrong credentials, check password',
-            false,
-            403
-            );
+            const error = new HttpError('Wrong credentials, check password', false, 403 );
             return next(error);
         }
 
@@ -243,10 +239,8 @@ exports.uploaddocs = async (req, res, next) => {
             image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
         }
-        console.log(`http://${config.HOST}:${config.PORT}/${req.file.path}`);
         user.verifydoc = image;
         await user.save();
-       // res.send(final_img.data);
         res.json({message: 'Successfully Uploaded, will revert back to you soon', success: true});
     } catch (err) {
         console.log(err);

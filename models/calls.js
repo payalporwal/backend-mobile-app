@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 
-const timeStamp = require('../../utils/timestamp');
+const timeStamp = require('../utils/timestamp');
 
 const Schema = mongoose.Schema;
 

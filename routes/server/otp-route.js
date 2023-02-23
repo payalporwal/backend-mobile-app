@@ -1,12 +1,12 @@
-const jwt = require('jsonwebtoken');
+const router = require('express').Router();
 const bcrypt = require('bcryptjs');
-const { validationResult } = require('express-validator');
 require('dotenv').config();
 
 const HttpError = require('../../utils/http-error');
-const OTPmodel = require('../models/otp');
-const User = require('../models/user');
+const OTPmodel = require('../../models/otp');
+const User = require('../../models/user');
 const sendmail = require('../../utils/email/send');
+
 
 function otpfunc() {
     otplist = []
@@ -23,15 +23,13 @@ function otpfunc() {
     return otp;
 }
 
-const generateOTP = async (req, res, next) => {
+router.post('/sendOtp', async (req, res, next) => {
     try{
-        const errors = validationResult(req);
-          if (!errors.isEmpty()) {
-          return next(
-              new HttpError('Invalid inputs passed, Recheck', false, 422)
-          );
-        }
+        
         const {email, type} = req.body;
+        if(!email && !type) {
+            return next(new HttpError('Invalid inputs passed, Recheck', false, 422));
+        }
         const user = await User.findOne({email: email});
         //checking for user to send otp for login or other
         if(!user){
@@ -79,19 +77,16 @@ const generateOTP = async (req, res, next) => {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
-};
+});
 
-const verifyOtp = async (req, res, next) =>{
+router.post('/verifyOtp', async (req, res, next) =>{
     try{
-        const errors = validationResult(req);
-          if (!errors.isEmpty()) {
-          return next(
-              new HttpError('Invalid inputs passed, Recheck', false, 422)
-          );
-        }
         //check for inputs
         const {email, OTP, type} = req.body;
 
+        if(!email && !OTP && !type) {
+            return next(new HttpError('Invalid inputs passed, Recheck', false, 422));
+        }
         //verifying user for valid otp
         const otpdata = await OTPmodel.findOne({email: email});
         if(!otpdata){
@@ -123,7 +118,6 @@ const verifyOtp = async (req, res, next) =>{
         console.log(err);
         return next(new HttpError('Something went wrong, try again!', false, 500));
     }
-};
+});
 
-exports.generateOTP = generateOTP;
-exports.verifyOtp = verifyOtp;
+module.exports = router;

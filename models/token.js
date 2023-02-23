@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const timeStamp = require('../../utils/timestamp');
+const timeStamp = require('../utils/timestamp');
 
 const Schema = mongoose.Schema;
 

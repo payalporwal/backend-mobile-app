@@ -1,9 +1,9 @@
 const multer = require('multer');
 const uuid = require('uuid').v1;
 
-const timeStamp = require('../../utils/timestamp');
+const timeStamp = require('../utils/timestamp');
 
-const HttpError = require('../../utils/http-error');
+const HttpError = require('../utils/http-error');
 
 const MIME_TYPE_MAP = {
   'image/png': 'png',
