@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 require('dotenv').config();
 
@@ -84,16 +83,7 @@ const login = async (req, res, next) => {
       }
   
       let isValidPassword = false;
-      try{
-        isValidPassword = await bcrypt.compare(password, existingUser.password);
-      } catch (err) {
-        const error = new HttpError(
-          'Couldn\'t log you in, please check your credentials and try again.',
-          false,
-          500
-        );
-        return next(error);
-      }
+      isValidPassword = await bcrypt.compare(password, existingUser.password);
   
       if (!isValidPassword) {
         const error = new HttpError(

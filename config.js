@@ -10,12 +10,16 @@ environments.development = {
 environments.test = {
     HOST : process.env.HOST_DEV,
     PORT : process.env.PORT_DEV,
-    DB : process.env.DB_URL_DEV 
+    DB : process.env.DB_URL_DEV, 
+    key : process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.key",
+    cert : process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.crt"
 }
 environments.production = {
     HOST : process.env.HOST_PROD,
     PORT : process.env.PORT_PROD,
     DB : process.env.DB_URL_PROD, 
+    key: process.env.SSL_DIRECTORY +  "backend.ssl.d/server.paceful.org.key",
+    cert: process.env.SSL_DIRECTORY + "backend.ssl.d/server.paceful.org.crt"
 }
 
 

@@ -4,14 +4,13 @@ const timeStamp = require('../utils/timestamp');
 
 const Schema = mongoose.Schema;
 
-const blog = new Schema({
+const blogSchema = new Schema({
     title: { type: String, required: true },
+    image: [{ image: Buffer, contentType: String}],
     description: { type: String, required: true },
-    image: { image: Buffer, contentType: String, require: true},
-    createdAt : { type: Date, default : timeStamp },
-    updatedAt: { type: Date, default : timeStamp }
+    content: { type:String, required: true},
+    category: { type: String, required: true},
+    createdAt : { type: Date, default : timeStamp }
 });
 
-scheduleCall.plugin(uniqueValidator, {message: 'Already Booked!'});
-
-module.exports = mongoose.model('callSchedule', scheduleCall);
+module.exports = mongoose.model('blog', blogSchema);
