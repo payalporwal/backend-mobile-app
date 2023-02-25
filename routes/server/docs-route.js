@@ -1,22 +1,55 @@
 const router = require('express').Router();
-const User = require('../models/user');
+const User = require('../../models/user');
 const docQuestion = require('../../models/docQuestions');
 const HttpError = require('../../utils/http-error');
 const check_auth = require('../../middleware/check_auth');
 
-router.use(check_auth);
 
-router.post('/skillsset', async (req, res, next) => {
+
+router.post('/skillset', check_auth ,async (req, res, next) => {
     try{
-        const user = await User.findById(req.userData.userId);
-        const questions = await docQuestion.find({user: user}).populate('user');
-        if(!questions ){
-            const quests =  new docQuestion({ user: user, skillset: req.body});
+        const user = await User.findById(req.user.id);
+        const questions = await docQuestion.findOne({user: user}).populate({
+            path: 'user',
+            select: 'username age gender'
+        });
+      
+        if(questions ){
+           
+            questions.skillset = req.body.skillset;
+            await questions.save();
+            return res.status(200).json({message: 'Saved Successfully', success: true});
+        }
+        const quests =  new docQuestion({ user: user, skillset: req.body.skillset}); 
+        await quests.save();
+        quests.populate({
+            path: 'user',
+            select: 'username age gender'
+        });
+        res.status(201).json({message: 'Saved Successfully', success: true});
+    } catch(err){
+        console.log(err);   
+        return next(new HttpError('Something went wrong, Could not Save!', false, 500));
+    }
+});
+
+router.post('/question',check_auth, async (req, res, next) => {
+    try{
+        const user = await User.findById(req.user.id);
+        const questions = await docQuestion.findOne({user: user}).populate({
+            path: 'user',
+            select: 'username age gender'
+        });
+        if(!questions){
+            const quests =  new docQuestion({ user: user, questionaire: req.body.questionaire});
             await quests.save();
-            quests.populate('user');
+            quests.populate({
+            path: 'user',
+            select: 'username age gender'
+        });
             return res.status(201).json({message: 'Saved Successfully', success: true});
         }
-        questions.skillset = req.body;
+        questions.questionaire = req.body.questionaire;
         await questions.save();
         return res.status(200).json({message: 'Saved Successfully', success: true});
     } catch(err){
@@ -24,21 +57,57 @@ router.post('/skillsset', async (req, res, next) => {
     }
 });
 
-router.post('/question', async (req, res, next) => {
+router.get('/get/question', check_auth, async (req, res, next) => {
     try{
-        const user = await User.findById(req.userData.userId);
-        const questions = await docQuestion.find({user: user}).populate('user');
-        if(!questions ){
-            const quests =  new docQuestion({ user: user, questionaire: req.body});
-            await quests.save();
-            quests.populate('user');
-            return res.status(201).json({message: 'Saved Successfully', success: true});
+        const user = await User.findById(req.user.id);
+        const questions = await docQuestion.findOne({user: user}).populate({
+            path: 'user',
+            select: 'username age gender'
+        }).select({questionaire:1});
+        if(!questions){
+            return next(new HttpError('No questionaire found!', false, 404));
         }
-        questions.questionaire = req.body;
-        await questions.save();
-        return res.status(200).json({message: 'Saved Successfully', success: true});
+        res.status(200).json({message: 'Questionaire found', success: true, questions: questions});
     } catch(err){
-        return next(new HttpError('Something went wrong, Could not Save!', false, 500));
+        console.log(err);
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 });
 
+router.get('/get/skillset', check_auth, async (req, res, next) => {
+    try{
+        const user = await User.findById(req.user.id);
+        const skillsets = await docQuestion.findOne({user: user}).populate({
+            path: 'user',
+            select: 'username age gender'
+        }).select({skillset:1});
+        if(!skillsets){
+            return next(new HttpError('No skillsets found!', false, 404));
+        }
+        res.status(200).json({message: 'Skillsets found', success: true, skillsets: skillsets});
+    } catch(err){
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+});
+
+
+
+//get all answers with users
+router.get('/getall/assessment', async (req, res, next) => {
+    try{
+        const assessment = await docQuestion.find().populate({
+            path: 'user',
+            select: 'username age gender'
+        }).select({user:1, questionaire:1, skillset:1});
+        if(!assessment){
+            return next(new HttpError('No assessment found!', false, 404));
+        }
+        res.status(200).json({message: 'Assessments Here', success: true, assessment});
+    }
+    catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+});
+
+module.exports = router;

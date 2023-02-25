@@ -3,11 +3,13 @@ require('dotenv').config();
 let environments = {};
 
 environments.development = {
+    https : 'http',
     HOST : '0.0.0.0',
     PORT : 3000,
     DB : process.env.DB_URL_DEV 
 }
 environments.test = {
+    https : 'https',
     HOST : process.env.HOST_DEV,
     PORT : process.env.PORT_DEV,
     DB : process.env.DB_URL_DEV, 
@@ -15,6 +17,7 @@ environments.test = {
     cert : process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.crt"
 }
 environments.production = {
+    https : 'https',
     HOST : process.env.HOST_PROD,
     PORT : process.env.PORT_PROD,
     DB : process.env.DB_URL_PROD, 

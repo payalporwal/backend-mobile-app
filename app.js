@@ -16,6 +16,7 @@ const otpRouter = require('./routes/server/otp-route');
 const callsRouter = require('./routes/server/call-routes');
 const adminRouter = require('./routes/admin/admin-routes');
 const blogRouter = require('./routes/admin/blog-routes');
+const docRouter = require('./routes/server/docs-route');
 
 const HttpError = require('./utils/http-error');
 
@@ -59,7 +60,7 @@ app.use('/api/process',processRouter);
 app.use('/api/healercall', callsRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);
-
+app.use('/api/docs',docRouter);
 
 //admin
 app.use('/api/admin',adminRouter);
@@ -88,7 +89,7 @@ app.use((error, req, res, next) => {
 
 if(process.env.NODE_ENV === 'development'){
     app.listen(config.PORT, config.HOST, () => {
-        console.log(`Server running on http://${config.HOST}:${config.PORT}`);
+        console.log(`Server running on ${config.https}://${config.HOST}:${config.PORT}`);
     })
 } else {
   https
@@ -102,6 +103,6 @@ if(process.env.NODE_ENV === 'development'){
       app
     )
     .listen(config.PORT, config.HOST, () => {
-      console.log(`Server running on https://${config.HOST}:${config.PORT}`);
+      console.log(`Server running on ${config.https}://${config.HOST}:${config.PORT}`);
   })
 }

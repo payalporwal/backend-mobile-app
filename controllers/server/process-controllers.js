@@ -1,6 +1,5 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
-const config =  require('../../config.js');
 const fs = require('fs');
 
 const UserToken = require('../../models/token');
@@ -12,17 +11,12 @@ const feedbacks = require('../../models/feedback');
 
 require('dotenv').config();
 
-var current = new Date();
-const timeStamp = new Date(Date.UTC(current.getFullYear(), 
-    current.getMonth(),current.getDate(),current.getHours(), 
-    current.getMinutes(),current.getSeconds(), current.getMilliseconds())
-);
-
+const timeStamp = require('../../utils/timestamp');
 
 //access data apis
 exports.getUserbyId = async (req, res, next) => {
     try{
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
     
         if(!user) {
             const error = new HttpError(
@@ -69,7 +63,7 @@ exports.updateSlide = async (req, res, next) => {
         );
         }
 
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
         user.slideno = req.body.slideno;
         user.completedDoc = req.body.completedDoc;
         await user.save();
@@ -92,7 +86,7 @@ exports.updateUser = async (req, res, next) => {
         }
 
         const { username, phone, age, gender } = req.body;
-        const userId = req.userData.userId;
+        const userId = req.user.id;
 
         const userphone = await User.findOne({phone: phone});
         if(userphone){
@@ -145,7 +139,7 @@ exports.changePassword = async (req, res, next) => {
         }
 
         const {oldpassword, newpassword} = req.body;
-        const userId = req.userData.userId;
+        const userId = req.user.id;
         const user = await User.findById(userId);
 
         let isValidPassword = false;
@@ -183,8 +177,8 @@ exports.changePassword = async (req, res, next) => {
 //delete profile 
 exports.deleteUser = async (req, res, next) => {
     try{
-        await User.findByIdAndUpdate(req.userData.userId, {active: false});
-        await UserToken.findOneAndDelete({userId: req.userData.userId});
+        await User.findByIdAndUpdate(req.user.id, {active: false});
+        await UserToken.findOneAndDelete({userId: req.user.id});
         res.status(200).json({message: 'Account Deletion Successful', success: true});
     } catch (err) {
         console.log(err);
@@ -199,7 +193,7 @@ exports.supportRequest = async (req, res, next) =>{
         if(!text) {
             return next(HttpError('Write Something and try again', false, 400));
         }
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
         await new supports({userId: user.id, username: user.username, email: user.email, text: text }).save();
         res.status(201).json({message: 'Request sent, Will get back to you soon', success: true});
     } catch (err){
@@ -214,7 +208,7 @@ exports.feedback = async (req, res, next) =>{
         if(!text && !rating) {
             return next(HttpError('Write Something and try again', false, 400));
         }
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
         await new feedbacks({username: user.username, age: user.age, gender: user.gender, email: user.email, text: text, rating: rating}).save();
         res.status(201).json({message: 'Thankyou for your feeback, it is valuable for us!', success: true});
     } catch (err){
@@ -225,7 +219,7 @@ exports.feedback = async (req, res, next) =>{
 
 exports.uploaddocs = async (req, res, next) => {
     try{
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
         if(!user) {
             const error = new HttpError(
                 'No valid user found, Try Again',
@@ -234,11 +228,11 @@ exports.uploaddocs = async (req, res, next) => {
             );
             return next(error);
         }
-
         const image = {
             image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
         }
+        console.log(req.file.path);
         user.verifydoc = image;
         await user.save();
         res.json({message: 'Successfully Uploaded, will revert back to you soon', success: true});

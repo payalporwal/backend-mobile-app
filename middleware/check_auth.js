@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
       throw new HttpError('Authentication failed!, Provide valid Token', false, 404);
     }
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_PRIVATE_KEY);
-    req.userData = { userId: decodedToken.userId, email: decodedToken.email };
+    req.user = { id: decodedToken.userId, email: decodedToken.email };
     
     next();
   } catch (err) {

@@ -7,11 +7,7 @@ const callSchema = require('../../models/calls');
 
 require('dotenv').config();
 
-var current = new Date();
-const timeStamp = new Date(Date.UTC(current.getFullYear(), 
-    current.getMonth(),current.getDate(),current.getHours(), 
-    current.getMinutes(),current.getSeconds(), current.getMilliseconds())
-);
+const timeStamp = require('../../utils/timestamp');
 
 const getCallToken = async (req, res, next) => {
     try{
@@ -81,7 +77,7 @@ const slotbook = async (req, res, next) => {
             );
         }
 
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
         const { strength, date, note } = req.body;
         const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
             path: 'talkerUser',
@@ -109,7 +105,7 @@ const slotbook = async (req, res, next) => {
 
 const gettalksideslots = async (req, res, next) => {
     try{
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
         
         const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
             path: 'talkerUser',
@@ -129,7 +125,7 @@ const gettalksideslots = async (req, res, next) => {
 
 const gethearsideslots = async (req, res, next) => {
     try{
-        const user = await User.findById(req.userData.userId);
+        const user = await User.findById(req.user.id);
         
         const slots = await callSchema.find({listenerUser: user,  expire: false}).populate({
             path: 'listenerUser',

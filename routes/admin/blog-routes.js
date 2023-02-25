@@ -1,8 +1,18 @@
 const router = require('express').Router();
+const fs = require('fs');
 const HttpError = require('../../utils/http-error');
-const checkAuth = require('../../middleware/admin_auth');
+const checkAuth = require('../../middleware/check_auth');
 const blogSchema = require('../../models/blog');
+
 const fileUpload = require('../../middleware/file_upload');
+const blogControllers = require('../../controllers/admin/blog-controller');
+
+
+//upload array of images
+router.post('/upload/image', fileUpload.single('blogs') , blogControllers.uploadimage);
+
+// upload blogs 
+router.post('/create', checkAuth, blogControllers.uploadblogs);
 
 router.get('/getall', async (req, res, next) => {
     try{
@@ -24,28 +34,11 @@ router.get('/get/:blogId', async (req, res, next) => {
     }
 });
 
-router.get('/getbycategory/:category', async(res, req, next) =>{
+router.get('/getcategory/:category', async(req, res, next) =>{
     try{
         const blogs = await blogSchema.find({category: req.params.category});
         res.json({ message: 'Blogs are here' , success:true, blogs});
     } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
-    }
-});
-
-
-router.post('/create', fileUpload.any('image') ,checkAuth, async (req, res, next) => {
-    try{
-        const user = req.userData.userId;
-        if(user.roles === 'support'){
-            return res.json({message: 'You are not authorized to create a blog', success: false});
-        }
-        const {title, content, description, category} = req.body;
-        const newblog =  new blogSchema({title: title, content: content, description: description, category: category,image: []});
-        await newblog.save();
-        res.status(201).json({message: 'Blog Created!', success: true});
-    } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }

@@ -6,7 +6,12 @@ const Schema = mongoose.Schema;
 
 const blogSchema = new Schema({
     title: { type: String, required: true },
-    image: [{ image: Buffer, contentType: String}],
+    images: [{ 
+        img: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'image'
+        }
+    }],
     description: { type: String, required: true },
     content: { type:String, required: true},
     category: { type: String, required: true},

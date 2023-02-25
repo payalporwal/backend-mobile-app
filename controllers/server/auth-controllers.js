@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
 require('dotenv').config();
 
-
+const timeStamp = require('../../utils/timestamp');
 const HttpError = require('../../utils/http-error');
 const User = require('../../models/user');
 const generateTokens = require('../../utils/generate-token');
@@ -117,26 +117,22 @@ const login = async (req, res, next) => {
 const forgetPassword = async (req, res, next) => {
   try{
       const errors = validationResult(req);
-          if (!errors.isEmpty()) {
-          return next(
-              new HttpError('Invalid inputs passed, Recheck', false, 422)
-          );
+      if (!errors.isEmpty()) {
+        return next(  new HttpError('Invalid inputs passed, Recheck', false, 422)  );
       }
 
       const {email, password} = req.body;
       
       const user = await User.findOne({email: email});
       if(!user || !user.active){
-        return next(
-          new HttpError('User doesn\'t exists, please check your data.', false, 422)
-      );
+        return next(  new HttpError('User doesn\'t exists, please check your data.', false, 422)  );
       }
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
       const hashedPassword = await bcrypt.hash(password, salt);
 
       user.password = hashedPassword;
+      user.updatedAt = timeStamp;
       await user.save();
-
       res.status(200).json({message: 'Password changes successfully!', success: true});
   } catch(err){
       console.log(err);
