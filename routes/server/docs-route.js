@@ -2,11 +2,14 @@ const router = require('express').Router();
 const User = require('../../models/user');
 const docQuestion = require('../../models/docQuestions');
 const HttpError = require('../../utils/http-error');
-const check_auth = require('../../middleware/check_auth');
+const checkAuth = require('../../middleware/check_auth');
 
 
 
-router.post('/skillset', check_auth ,async (req, res, next) => {
+// create documnent slide
+
+
+router.post('/skillset', checkAuth ,async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
         const questions = await docQuestion.findOne({user: user}).populate({
@@ -33,7 +36,7 @@ router.post('/skillset', check_auth ,async (req, res, next) => {
     }
 });
 
-router.post('/question',check_auth, async (req, res, next) => {
+router.post('/question',checkAuth, async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
         const questions = await docQuestion.findOne({user: user}).populate({
@@ -56,8 +59,8 @@ router.post('/question',check_auth, async (req, res, next) => {
         return next(new HttpError('Something went wrong, Could not Save!', false, 500));
     }
 });
-
-router.get('/get/question', check_auth, async (req, res, next) => {
+/*
+router.get('/get/question', checkAuth, async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
         const questions = await docQuestion.findOne({user: user}).populate({
@@ -74,7 +77,7 @@ router.get('/get/question', check_auth, async (req, res, next) => {
     }
 });
 
-router.get('/get/skillset', check_auth, async (req, res, next) => {
+router.get('/get/skillset', checkAuth, async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
         const skillsets = await docQuestion.findOne({user: user}).populate({
@@ -90,7 +93,7 @@ router.get('/get/skillset', check_auth, async (req, res, next) => {
     }
 });
 
-
+*/
 
 //get all answers with users
 router.get('/getall/assessment', async (req, res, next) => {

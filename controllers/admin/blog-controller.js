@@ -5,7 +5,7 @@ const userSchema = require('../../models/admin');
 const blogSchema = require('../../models/blog');
 const imageSchema = require('../../models/image');
 
-// upload image separately
+/* upload image separately
 exports.uploadimage = async (req, res, next) => {
     try{
         const user = await userSchema.findById(req.user.id);
@@ -36,7 +36,7 @@ exports.uploadimage = async (req, res, next) => {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
-}; 
+}; */
 
 
 //upload content of blog

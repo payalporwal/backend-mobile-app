@@ -17,8 +17,11 @@ const callsRouter = require('./routes/server/call-routes');
 const adminRouter = require('./routes/admin/admin-routes');
 const blogRouter = require('./routes/admin/blog-routes');
 const docRouter = require('./routes/server/docs-route');
+const slideRouter = require('./routes/admin/create-slide');
 
 const HttpError = require('./utils/http-error');
+
+
 
 const config =  require('./config.js');
 require('./database/db');
@@ -53,7 +56,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/users',authRouter);
 
 //web login signup
-app.use('/api/web', authRouter);
+app.use('/api/web', [ authRouter, slideRouter]);
 
 //common
 app.use('/api/process',processRouter);

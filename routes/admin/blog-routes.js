@@ -14,7 +14,9 @@ router
     .post('/update/:blogId', fileUpload.single('blogs'), checkAuth, blogControllers.updateblog)
     .delete('/delete/:blogId',  checkAuth, blogControllers.deleteblog);
 
-
+//upload image
+// router
+//     .post('/create',fileUpload.single('blogs'), checkAuth, blogControllers.uploadblogs)
 router
     .get('/getall', blogControllers.getallblogs)
     .get('/get/:blogId', blogControllers.getblogbyid);
