@@ -47,7 +47,7 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
-app.use('/uploads/images', express.static(path.join('uploads', 'images')));
+app.use('/uploads', express.static('uploads'));
 
 //for app login signup 
 app.use('/api/users',authRouter);
@@ -78,6 +78,18 @@ app.use((error, req, res, next) => {
   if (req.file) {
     fs.unlink(req.file.path, err => {
       console.log(err);
+    });
+  }
+  if (error.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({
+      message: 'File size is too large, should be less than 5MB',
+      success: false
+    });
+  }
+  if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+    return res.status(400).json({
+      message: 'Too many files to upload. or Check image key name!',
+      success: false
     });
   }
   if (res.headerSent) {

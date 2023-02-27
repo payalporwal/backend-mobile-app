@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const encrypt = require('mongoose-encryption');
 
-const secret = process.env.MONGOOSE_SECRET;
-
 const timeStamp = require('../utils/timestamp');
 
 const userSchema = new mongoose.Schema({
@@ -15,8 +13,8 @@ const userSchema = new mongoose.Schema({
     age: { type: Number, required: true },
     slideno: { type: Number, default: 0 },
     completedDoc: { type: Boolean, default: false},
-    profile: { image: Buffer, contentType: String},
-    verifydoc:{ image: Buffer, contentType: String},
+    profile: { image: Buffer, contentType: String, path: String},
+    verifydoc:{ image: Buffer, contentType: String, path: String},
     verified: { type:Boolean, default: false },
     devicetoken: { type: String },
     active: { type: Boolean, require: true, default: true },
@@ -25,7 +23,7 @@ const userSchema = new mongoose.Schema({
     updatedAt: { type: Date, default : timeStamp }
 });
 
-userSchema.plugin(encrypt, {secret:secret, encryptedFields: ['password']});
+userSchema.plugin(encrypt, {secret: process.env.MONGOOSE_SECRET, encryptedFields: ['password', 'profile.path', 'verifydoc.path']});
 userSchema.plugin(uniqueValidator, {message: 'Already taken.'});
 
 

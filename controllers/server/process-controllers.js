@@ -7,7 +7,7 @@ const HttpError = require('../../utils/http-error');
 const User = require('../../models/user');
 const supports = require('../../models/support');
 const feedbacks = require('../../models/feedback');
-
+const config = require('../../config');
 
 require('dotenv').config();
 
@@ -27,7 +27,10 @@ exports.getUserbyId = async (req, res, next) => {
             
             return next(error);
         }
-
+        const image = {
+            path: user.profile.path,
+            contentType: user.profile.contentType,
+        }
         res.status(200).json({
             message: `Access as ${user.username}`,
             success: true,
@@ -37,7 +40,7 @@ exports.getUserbyId = async (req, res, next) => {
             phone: user.phone,
             age: user.age,
             gender: user.gender,
-            profile: user.profile,
+            profile: image,
             verified: user.verified,
             slideno: user.slideno,
             docComplete: user.completedDoc
@@ -108,6 +111,7 @@ exports.updateUser = async (req, res, next) => {
         const image = {
             image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
+            path: req.file.path
         }
         user.profile = image;
         user.username = username;
@@ -228,11 +232,12 @@ exports.uploaddocs = async (req, res, next) => {
             );
             return next(error);
         }
+        const path = req.file.path;
         const image = {
-            image: fs.readFileSync(req.file.path),
+            image: fs.readFileSync(path),
             contentType: req.file.mimetype,
+            path: path
         }
-        console.log(req.file.path);
         user.verifydoc = image;
         await user.save();
         res.json({message: 'Successfully Uploaded, will revert back to you soon', success: true});

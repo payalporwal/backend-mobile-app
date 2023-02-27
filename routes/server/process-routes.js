@@ -14,14 +14,14 @@ router.get('/dashboard', processControllers.getUserbyId);
 
 router.post('/slideupdate', [check('slideno').isNumeric(), check('completedDoc').isBoolean()] ,processControllers.updateSlide);
 
-router.post('/supportrequest', processControllers.supportRequest);
-
-router.post('/feedback', processControllers.feedback);
-
-router.post('/verification', fileUpload.single('verifydoc'), processControllers.uploaddocs);
+router
+    .post('/supportrequest', processControllers.supportRequest)
+    .post('/feedback', processControllers.feedback)
+    .post('/verification', fileUpload.single('verifydoc'), processControllers.uploaddocs)
+    .delete('/remove', processControllers.deleteUser);
 
 router.patch('/update', 
-    fileUpload.single('profile'),
+    fileUpload.single('images'),
     [
         check('username').notEmpty(), 
         check('phone').isMobilePhone(),
@@ -35,8 +35,5 @@ router.patch('/changePassword', [
         check('newpassword').isLength({min:6}),
     ], processControllers.changePassword
 );
-
-router.delete('/remove', processControllers.deleteUser);
-
 
 module.exports = router;

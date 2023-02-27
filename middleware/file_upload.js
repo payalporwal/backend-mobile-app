@@ -1,5 +1,5 @@
 const multer = require('multer');
-
+const fs = require('fs');
 const timeStamp = require('../utils/timestamp');
 const HttpError = require('../utils/http-error');
 
@@ -11,10 +11,12 @@ const MIME_TYPE_MAP = {
 };
 
 const fileUpload = multer({
-  limits: 1024,
+  limits: {
+    fileSize: 5*1024*1024,
+  },
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'uploads/images');
+      cb(null, `uploads/${file.fieldname}`);
     },
     filename: (req, file, cb) => {
       const ext = MIME_TYPE_MAP[file.mimetype];
