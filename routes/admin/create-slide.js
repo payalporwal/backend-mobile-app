@@ -28,7 +28,7 @@ router.post('/create-slide', async (req, res, next) => {
 // get slide data
 router.get('/get-slide', async (req, res, next) => {
     try{
-        const slide = await Slide.find().select('slidedata');
+        const slide = await Slide.find();
         res.status(200).json({slide: slide});
     } catch(err){
         console.log(err);
