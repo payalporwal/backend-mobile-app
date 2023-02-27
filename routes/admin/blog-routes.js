@@ -1,9 +1,6 @@
 const router = require('express').Router();
-const fs = require('fs');
-const HttpError = require('../../utils/http-error');
-const checkAuth = require('../../middleware/check_auth');
-const blogSchema = require('../../models/blog');
 
+const checkAuth = require('../../middleware/check_auth');
 const fileUpload = require('../../middleware/file_upload');
 const blogControllers = require('../../controllers/admin/blog-controller');
 
