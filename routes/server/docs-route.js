@@ -98,10 +98,10 @@ router.get('/get/skillset', checkAuth, async (req, res, next) => {
 //get all answers with users
 router.get('/getall/assessment', async (req, res, next) => {
     try{
-        const assessment = await docQuestion.find().populate({
+        const assessment = await docQuestion.find({questionairepass : {$ne : 'PASS'}}).populate({
             path: 'user',
             select: 'username age gender'
-        }).select({user:1, questionaire:1, skillset:1});
+        }).select({user:1, questionaire: 1 , skillset: 1});
         if(!assessment){
             return next(new HttpError('No assessment found!', false, 404));
         }
@@ -112,5 +112,36 @@ router.get('/getall/assessment', async (req, res, next) => {
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 });
+
+// mark skills as pass
+router.post('/pass/:id', checkAuth, async (req, res, next) => {
+    try{
+        const assessment = await docQuestion.findById(req.params.id);
+        const { result, field } = req.body;
+        if( !result || !field ){
+            return next(new HttpError('Please provide all fields', false, 422));
+        }
+        if(!assessment){
+            return next(new HttpError('No assessment found!', false, 404));
+        }
+        if(field === 'skillset'){
+            assessment.skillsetpass = result;
+        }
+        else if(field === 'questionaire'){
+            assessment.questionairepass = result;
+        }
+        else{
+            return next(new HttpError('Invalid field', false, 422));
+        }
+        await assessment.save();
+        res.status(200).json({message: 'Evaluation Done', success: true});
+    }
+    catch(err){
+        console.log(err);
+        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }
+});
+
+
 
 module.exports = router;

@@ -14,6 +14,8 @@ const docQuestion = new Schema({
         question: {type: String, required: true},
         answer: {type: String, required: true}
     }],
+    skillpass: { type: String },
+    questionairepass: { type: String },
     createdAt: { type: Date, default: timeStamp },
     updatedAt: { type: Date, default: timeStamp }
 });
