@@ -13,16 +13,16 @@ environments.test = {
     HOST : process.env.HOST_DEV,
     PORT : process.env.PORT_DEV,
     DB : process.env.DB_URL_DEV, 
-    key : process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.key",
-    cert : process.env.SSL_DIRECTORY + "server-test.ssl.d/test.paceful.org.crt"
+    key : `${process.env.SSL_DIRECTORY}/${process.env.APP_DEV}/${process.env.HOST_DEV}.key`,
+    cert : `${process.env.SSL_DIRECTORY}/${process.env.APP_DEV}/${process.env.HOST_DEV}.crt`
 }
 environments.production = {
     https : 'https',
     HOST : process.env.HOST_PROD,
     PORT : process.env.PORT_PROD,
     DB : process.env.DB_URL_PROD, 
-    key: process.env.SSL_DIRECTORY +  "server.ssl.d/server.paceful.org.key",
-    cert: process.env.SSL_DIRECTORY + "server.ssl.d/server.paceful.org.crt"
+    key: `${process.env.SSL_DIRECTORY}/${process.env.APP_PROD}/${process.env.HOST_PROD}.key`,
+    cert: `${process.env.SSL_DIRECTORY}/${process.env.APP_PROD}/${process.env.HOST_PROD}.crt`
 }
 
 
