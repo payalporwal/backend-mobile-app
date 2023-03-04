@@ -1,9 +1,8 @@
 const fs = require('fs');
 const HttpError = require('../../utils/http-error');
-const config = require('../../config');
 const userSchema = require('../../models/admin');
 const blogSchema = require('../../models/blog');
-const imageSchema = require('../../models/image');
+//const imageSchema = require('../../models/image');
 
 /* upload image separately
 exports.uploadimage = async (req, res, next) => {
@@ -65,7 +64,7 @@ exports.uploadblogs = async (req, res, next) => {
         const blog = new blogSchema({ title, description, content, images : image });
         await blog.save();
         console.log(blog.images.path);
-        res.json({ message: 'Blog added' , success:true});
+        res.json({ message: 'New blog added' , success:true});
     }
     catch(err){
         console.log(err);
