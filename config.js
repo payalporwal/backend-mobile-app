@@ -21,8 +21,8 @@ environments.production = {
     HOST : process.env.HOST_PROD,
     PORT : process.env.PORT_PROD,
     DB : process.env.DB_URL_PROD, 
-    key: process.env.SSL_DIRECTORY +  "backend.ssl.d/server.paceful.org.key",
-    cert: process.env.SSL_DIRECTORY + "backend.ssl.d/server.paceful.org.crt"
+    key: process.env.SSL_DIRECTORY +  "server.ssl.d/server.paceful.org.key",
+    cert: process.env.SSL_DIRECTORY + "server.ssl.d/server.paceful.org.crt"
 }
 
 
