@@ -7,17 +7,16 @@ const blogControllers = require('../../controllers/admin/blog-controller');
 
 //upload array of images
 router
-    .post('/create',fileUpload.single('blogs'), checkAuth, blogControllers.uploadblogs)
-    .post('/update/:blogId', fileUpload.single('blogs'), checkAuth, blogControllers.updateblog)
-    .delete('/delete/:blogId',  checkAuth, blogControllers.deleteblog);
+    .post('/create', checkAuth, blogControllers.uploadblogs)
+    .post('/update/:blogId', checkAuth, blogControllers.updateblog)
+    .post('/archive/:blogId',checkAuth, blogControllers.archiveblog);
 
 //upload image
 // router
 //     .post('/create',fileUpload.single('blogs'), checkAuth, blogControllers.uploadblogs)
 router
     .get('/getall', blogControllers.getallblogs)
+    .get('/get/category', blogControllers.getblogbycategory)
     .get('/get/:blogId', blogControllers.getblogbyid);
     
-//.get('/get/:category', blogControllers.getblogbycategory);
-
 module.exports = router;

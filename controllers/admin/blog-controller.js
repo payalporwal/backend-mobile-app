@@ -46,7 +46,7 @@ exports.uploadblogs = async (req, res, next) => {
         if(!(role === 'admin' || role === 'content')){
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
-        const {title, description, content, alt} = req.body;
+        const {title, description, content, category, alt, imgdata, imgtype } = req.body;
         /*
         const image = images.map((image) => {
             return {
@@ -57,13 +57,11 @@ exports.uploadblogs = async (req, res, next) => {
 
         const image = {
             alt: alt,
-            path: req.file.path,
-            data: fs.readFileSync(req.file.path),
-            contentType: req.file.mimetype,
+            data: imgdata,
+            contentType: imgtype,
         }
-        const blog = new blogSchema({ title, description, content, images : image });
+        const blog = new blogSchema({ title, description, content, category, images : image });
         await blog.save();
-        console.log(blog.images.path);
         res.json({ message: 'New blog added' , success:true});
     }
     catch(err){
@@ -81,17 +79,16 @@ exports.updateblog = async (req, res, next) => {
         if(!(role === 'admin' || role === 'content')){
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
-        const {title, description, content, alt} = req.body;
+        const {title, description, content, category, alt, imgdata, imgtype} = req.body;
         const image = {
             alt: alt,
-            path: req.file.path,
-            data: fs.readFileSync(req.file.path),
-            contentType: req.file.mimetype,
+            data: imgdata,
+            contentType: imgtype,
         }
         const blog = await blogSchema.findById(req.params.blogId);
         blog.title = title;
         blog.description = description;
-        //blog.category = category;
+        blog.category = category;
         blog.content = content;
         blog.images = image;
         await blog.save();
@@ -104,7 +101,7 @@ exports.updateblog = async (req, res, next) => {
 };
 
 // delete blogs
-exports.deleteblog = async (req, res, next) => {
+exports.archiveblog = async (req, res, next) => {
     try{
         const user = await userSchema.findById(req.user.id);
         const role = user.role;
@@ -112,8 +109,9 @@ exports.deleteblog = async (req, res, next) => {
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
         const blog = await blogSchema.findById(req.params.blogId);
-        await blog.remove();
-        res.json({ message: 'Blog deleted' , success:true});
+        blog.archive = true;
+        await blog.save();
+        res.json({ message: 'Blog archived' , success:true});
     }
     catch(err){
         console.log(err);
@@ -124,9 +122,9 @@ exports.deleteblog = async (req, res, next) => {
 // get all blogs
 exports.getallblogs = async (req, res, next) => {
     try{
-        const blogs = await blogSchema.find();
-        if(!blogs){
-            return res.json({ message: 'No Blogs Found!' , success:true, blogs});
+        const blogs = await blogSchema.find({archive: false}).select('title description content category images');
+        if(blogs.length === 0){
+            return res.json({ message: 'No Blogs Found!' , success:true});
         }
         res.json({ message: 'All blogs are here' , success:true, blogs});
     } catch(err){
@@ -138,9 +136,9 @@ exports.getallblogs = async (req, res, next) => {
 // get blog by id
 exports.getblogbyid =  async (req, res, next) => {
     try{
-        const blog = await blogSchema.findById(req.params.blogId);
-        if(!blog){
-            return res.json({ message: 'No Blogs Found!' , success:true, blog});
+        const blog = await blogSchema.findById(req.params.blogId).select('title description content category images');
+        if(!blog || blog.archive){
+            return res.json({ message: 'This blog is no longer available' , success:true, blog});
         }
         res.json({ message: 'Blog is here' , success:true, blog});
     } catch(err){
@@ -149,16 +147,19 @@ exports.getblogbyid =  async (req, res, next) => {
     }
 };
 
-/* get blog by category 
+// get blog by category 
 exports.getblogbycategory = async(req, res, next) =>{
     try{
-        const blogs = await blogSchema.find({category: req.params['category']});
-        if(!blogs){
-            return res.json({ message: 'No Blogs Found!' , success:true, blogs});
+        if(!req.body.category){
+            return next(new HttpError('Category is required', false, 400));
+        }
+        const blogs = await blogSchema.find({category: req.body.category, archive: false}).select('title description content category images');
+        if(blogs.length === 0){
+            return res.json({ message: 'No Blogs Found!' , success:true});
         }
         res.json({ message: 'Blogs are here' , success:true, blogs});
     } catch(err){
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
-};*/
+};
