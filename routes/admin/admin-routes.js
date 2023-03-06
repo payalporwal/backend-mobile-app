@@ -58,7 +58,7 @@ router.post('/login', body('email').isEmail().normalizeEmail(), async (req, res,
             return next(new HttpError('Invalid credentials, Check your Password', false, 403));
         }
         const accessToken = await generateTokens(user);
-        res.json({ message: 'Logged In Successfully!', success: true, token: accessToken });
+        res.json({ message: 'Logged In Successfully!', success: true, role: user.role, token: accessToken });
     } catch (err){
         console.log(err);
         return next(new HttpError('Logging in failed, please try again later.', false, 500));

@@ -13,13 +13,13 @@ const blogSchema = new Schema({
     }],*/
     images: {
         alt: { type: String, required:true},
-        path: { type: String, required: true},
-        data: { type: Buffer, required: true},
+        data: { type: String, required: true},
         contentType: { type: String, required: true}
     },
     description: { type: String, required: true },
     content: { type:String, required: true},
-   // category: { type: String, required: true, enum:['anxiety', 'depression']},
+    category: { type: String, required: true, enum:['anxiety', 'depression']},
+    archive : { type : Boolean, default: false },
    // keyword: {type:String, enum: ['Must Read']},
     createdAt : { type: Date, default : timeStamp },
     updatedAt:  { type: Date, default : timeStamp }
