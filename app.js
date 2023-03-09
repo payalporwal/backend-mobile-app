@@ -50,6 +50,10 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
+app.get('/', (req, res, next) => {
+  res.send('Welcome to Pace!')
+});
+
 app.use('/uploads', express.static('uploads'));
 
 //for app login signup 
