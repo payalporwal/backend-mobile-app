@@ -51,7 +51,7 @@ app.use(xss());
 app.use(hpp());
 
 app.get('/', (req, res, next) => {
-  res.send('Welcome to Pace!')
+  res.send('Welcome to Pace!!!')
 });
 
 app.use('/uploads', express.static('uploads'));
