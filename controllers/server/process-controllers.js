@@ -108,6 +108,9 @@ exports.updateUser = async (req, res, next) => {
             );
             return next(error);
         }
+        if(!req.file.path){
+            return next(new HttpError('Please upload a again', false, 422));
+        }
         const image = {
             image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
