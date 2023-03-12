@@ -112,7 +112,6 @@ exports.updateUser = async (req, res, next) => {
             return next(new HttpError('Please upload a image', false, 422));
         }
         const image = {
-            image: fs.readFileSync(req.file.path),
             contentType: req.file.mimetype,
             path: req.file.path
         }
@@ -235,11 +234,12 @@ exports.uploaddocs = async (req, res, next) => {
             );
             return next(error);
         }
-        const path = req.file.path;
+        if(!req.file){
+            return next(new HttpError('Please upload a image', false, 422));
+        }
         const image = {
-            image: fs.readFileSync(path),
             contentType: req.file.mimetype,
-            path: path
+            path: req.file.path
         }
         user.verifydoc = image;
         await user.save();
