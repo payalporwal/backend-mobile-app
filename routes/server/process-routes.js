@@ -2,13 +2,11 @@ const express = require('express');
 const { check } = require('express-validator');
 
 const checkAuth = require('../../middleware/check_auth');
-const fileUpload = require('../../middleware/file_upload');
 const processControllers = require('../../controllers/server/process-controllers');
 
 const router = express.Router();
 
 router.use(checkAuth);
-
 
 router.get('/dashboard', processControllers.getUserbyId);
 
@@ -17,11 +15,9 @@ router.post('/slideupdate', [check('slideno').isNumeric(), check('completedDoc')
 router
     .post('/supportrequest', processControllers.supportRequest)
     .post('/feedback', processControllers.feedback)
-    .post('/verification', fileUpload.single('verifydoc'), processControllers.uploaddocs)
     .delete('/remove', processControllers.deleteUser);
 
 router.patch('/update', 
-    fileUpload.single('images'),
     [
         check('username').notEmpty(), 
         check('phone').isMobilePhone(),

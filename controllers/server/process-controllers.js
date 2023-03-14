@@ -81,13 +81,6 @@ exports.updateSlide = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
     try{
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-        return next(
-            new HttpError('Invalid inputs passed, Recheck', false, 422)
-        );
-        }
-
         const { username, phone, age, gender } = req.body;
         const userId = req.user.id;
 
@@ -108,14 +101,6 @@ exports.updateUser = async (req, res, next) => {
             );
             return next(error);
         }
-        if(!req.file){
-            return next(new HttpError('Please upload a image', false, 422));
-        }
-        const image = {
-            contentType: req.file.mimetype,
-            path: req.file.path
-        }
-        user.profile = image;
         user.username = username;
         user.phone = phone;
         user.age = age;
@@ -126,12 +111,7 @@ exports.updateUser = async (req, res, next) => {
 
         res.status(200).json({message: 'Updation Complete', success: true});
     } catch (err) {
-        console.log(err);
-        const error = new HttpError(
-        'Something went wrong, Try Again', false,
-        500
-        );
-        return next(error);
+        return next(new HttpError('Something went wrong, Could not Upload!', false, 500));
     }
 };
 
@@ -203,7 +183,7 @@ exports.supportRequest = async (req, res, next) =>{
         await new supports({userId: user.id, username: user.username, email: user.email, text: text }).save();
         res.status(201).json({message: 'Request sent, Will get back to you soon', success: true});
     } catch (err){
-        return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);
+        return next( new HttpError('Couldn\'t complete request, Send Again', false, 500));
     }
     
 };
@@ -218,34 +198,8 @@ exports.feedback = async (req, res, next) =>{
         await new feedbacks({username: user.username, age: user.age, gender: user.gender, email: user.email, text: text, rating: rating}).save();
         res.status(201).json({message: 'Thankyou for your feeback, it is valuable for us!', success: true});
     } catch (err){
-        return next( new HttpError('Couldn\'t complete request, Send Again'), false, 500);
+        return next( new HttpError('Couldn\'t complete request, Send Again', false, 500));
     }
     
 };
 
-exports.uploaddocs = async (req, res, next) => {
-    try{
-        const user = await User.findById(req.user.id);
-        if(!user) {
-            const error = new HttpError(
-                'No valid user found, Try Again',
-                false,
-                404
-            );
-            return next(error);
-        }
-        if(!req.file){
-            return next(new HttpError('Please upload a image', false, 422));
-        }
-        const image = {
-            contentType: req.file.mimetype,
-            path: req.file.path
-        }
-        user.verifydoc = image;
-        await user.save();
-        res.json({message: 'Successfully Uploaded, will revert back to you soon', success: true});
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError('Something went wrong, Couldn\'t upload!', false, 500));
-    }
-};
