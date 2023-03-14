@@ -81,6 +81,13 @@ exports.updateSlide = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
     try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, Recheck', false, 422)
+        );
+        }
+
         const { username, phone, age, gender } = req.body;
         const userId = req.user.id;
 
