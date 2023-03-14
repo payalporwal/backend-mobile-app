@@ -18,6 +18,7 @@ const adminRouter = require('./routes/admin/admin-routes');
 const blogRouter = require('./routes/admin/blog-routes');
 const docRouter = require('./routes/server/docs-route');
 const slideRouter = require('./routes/admin/create-slide');
+const imageupload = require('./routes/server/image_upload');
 
 const HttpError = require('./utils/http-error');
 
@@ -63,7 +64,7 @@ app.use('/api/users',authRouter);
 app.use('/api/web', [ authRouter, slideRouter]);
 
 //common
-app.use('/api/process',processRouter);
+app.use('/api/process',[processRouter, imageupload]);
 app.use('/api/healercall', callsRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);
@@ -89,7 +90,7 @@ app.use((error, req, res, next) => {
   }
   if (error.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
-      message: 'File size is too large, should be less than 5MB',
+      message: 'File size is too large, should be less than 2MB',
       success: false
     });
   }
