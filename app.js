@@ -37,11 +37,7 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 
 // Allow Cross-Origin requests
-const corsOptions ={
-  credentials:true,            //access-control-allow-credentials:true
-  optionSuccessStatus:200
-}
-app.use(cors(corsOptions));
+app.use(cors());
 
 // Set security HTTP headers
 app.use(helmet());
@@ -54,6 +50,15 @@ app.use(xss());
 
 // Prevent parameter pollution
 app.use(hpp());
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "500");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader( "Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, PATCH, OPTIONS" ); 
+  next();
+});
 
 app.get('/', (req, res, next) => {
   res.send('Welcome to Pace!!!')
