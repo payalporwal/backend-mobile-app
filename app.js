@@ -51,6 +51,18 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(hpp());
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "500");
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  res.setHeader( "Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, PATCH, OPTIONS" ); 
+  next();
+});
+
 app.get('/', (req, res, next) => {
   res.send('Welcome to Pace!!!')
 });
@@ -107,22 +119,4 @@ app.use((error, req, res, next) => {
     res.json({message: error.message || 'Unknown Error!!', success: error.success});
 });
 
-if(process.env.NODE_ENV === 'development'){
-  app.listen(config.PORT, config.HOST, () => {
-      console.log(`Server running on ${config.https}://${config.HOST}:${config.PORT}`);
-  })
-} else {
-https
-  .createServer(
-    // Provide the private and public key to the server by reading each
-    // file's content with the readFileSync() method.
-    {
-      key: fs.readFileSync( config.key ),
-      cert: fs.readFileSync(  config.cert ),
-    },
-    app
-  )
-  .listen(config.PORT, config.HOST, () => {
-    console.log(`Server running on ${config.https}://${config.HOST}:${config.PORT}`);
-})
-}
+app.listen(config.PORT, () => console.log(` Nodejs Applications is listening on port ${config.PORT}!`));
