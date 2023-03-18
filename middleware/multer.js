@@ -10,7 +10,7 @@ const MIME_TYPE_MAP = {
   'image/gif': 'gif'
 };
 
-const fileUpload = multer({
+module.exports = multer({
   limits: {
     fileSize: 2*1024*1024,
   },
@@ -22,4 +22,3 @@ const fileUpload = multer({
   }
 });
 
-module.exports = fileUpload;
