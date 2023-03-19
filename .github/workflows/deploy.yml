@@ -32,4 +32,5 @@ jobs:
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         rsync -avz -e 'ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' --exclude 'private_key.pem' . ubuntu@$SERVER_IP:backend-pace
-        ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$SERVER_IP "curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash - && sudo apt-get install -y nodejs && cd backend-pace && npm i && pm2 restart npm test"
+        ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$SERVER_IP "sudo apt-get remove -y libnode-dev &&
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash - && sudo apt-get install -y nodejs && cd backend-pace && npm i && pm2 restart npm test"
