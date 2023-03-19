@@ -28,5 +28,5 @@ jobs:
       run: |
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 400 private_key.pem
-        ssh -i private_key.pem -r . ubuntu@$SERVER_IP:backend-pace
-        ssh -i private_key.pem ubuntu@$SERVER_IP "cd backend-pace && npm ci && pm2 restart npm test"
+        ssh -i private_key.pem ubuntu@$SERVER_IP
+        cd backend-pace && npm ci && pm2 restart npm test
