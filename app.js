@@ -64,7 +64,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res, next) => {
-  res.send('Welcome to Pace!!!')
+  res.send('Welcome to Pace!! Testing')
 });
 
 app.use('/uploads', express.static('uploads'));
