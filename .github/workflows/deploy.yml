@@ -32,4 +32,4 @@ jobs:
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         rsync -avz -e 'ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' --exclude 'private_key.pem' . ubuntu@$SERVER_IP:backend-pace
-        ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$SERVER_IP "sudo apt-get remove -y libnode-dev libnode72 && sudo apt-get update && sudo apt-get upgrade -y && curl -fsSL https://deb.nodesource.com/setup_14.x | sudo bash - && sudo apt-get -y --allow-downgrades --allow-remove-essential --allow-change-held-packages -o Dpkg::Options::=--force-overwrite install nodejs && cd backend-pace && npm i && pm2 restart npm test"
+        ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$SERVER_IP "sudo apt-get update && sudo apt install nodejs npm && cd backend-pace && npm ci && pm2 restart npm test"
