@@ -28,7 +28,6 @@ jobs:
         username: ubuntu
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /path/to/your/app/directory
           git pull
           npm ci
-          pm2 restart your_app_name
+          pm2 restart app.js
