@@ -28,6 +28,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          cd backend-pace
           git pull
           npm ci
           pm2 restart app.js
