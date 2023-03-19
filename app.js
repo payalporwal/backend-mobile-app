@@ -1,13 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const https = require('https');
 const cors =  require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-const path = require('path');
 
 const authRouter = require('./routes/server/auth-routes');
 const processRouter = require('./routes/server/process-routes');
@@ -19,16 +17,11 @@ const blogRouter = require('./routes/admin/blog-routes');
 const docRouter = require('./routes/server/docs-route');
 const slideRouter = require('./routes/admin/create-slide');
 const imageupload = require('./routes/server/image_upload');
-
 const HttpError = require('./utils/http-error');
-
-
-
 const config =  require('./config.js');
 require('./database/db');
 
 console.log(`Node Environment is ${process.env.NODE_ENV}`);
-
 
 const app = express();
 app.use(express.json());
@@ -64,7 +57,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res, next) => {
-  res.send('Welcome to Pace!!!')
+  res.send('Welcome to Pace!! Testing')
 });
 
 app.use('/uploads', express.static('uploads'));
