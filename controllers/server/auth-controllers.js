@@ -94,12 +94,13 @@ const login = async (req, res, next) => {
         return next(error);
       }
       const accessToken = await generateTokens(existingUser);
-      //existingUser.devicetoken = devicetoken;
-      //await existingUser.save();
+      existingUser.devicetoken = devicetoken;
+      await existingUser.save();
   
       res.json({ 
         message: 'Logged In Successfully!',
         success: true,
+        slide: existingUser.slideno,
         token: accessToken
       });
       
