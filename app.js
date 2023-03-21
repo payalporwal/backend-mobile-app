@@ -30,7 +30,16 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 
 // Allow Cross-Origin requests
-app.use(cors());
+const corsOptions = {
+  origin: '*', // Allow all origins
+  methods: 'PUT, POST, GET, DELETE, PATCH, OPTIONS', // Allowed methods
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization', // Allowed headers
+  credentials: true,
+  maxAge: 800,
+};
+
+app.use(cors(corsOptions));
+
 
 // Set security HTTP headers
 app.use(helmet());
