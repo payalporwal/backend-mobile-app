@@ -6,7 +6,16 @@ const HttpError = require('../utils/http-error');
 
 module.exports = (req, res, next) => {
   if (req.method === 'OPTIONS') {
-    return next();
+    // Set CORS headers for OPTIONS request
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Max-Age", "500");
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
+    res.setHeader("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, PATCH, OPTIONS");
+    return res.status(200).send();
   }
   try {
     const token = req.headers.authorization.split(' ')[1]; // Authorization: 'Bearer TOKEN'
