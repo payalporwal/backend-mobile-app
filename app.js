@@ -53,8 +53,6 @@ app.use(mongoSanitize());
 // Data sanitization against XSS(clean user input from malicious HTML code)
 app.use(xss());
 
-// Prevent parameter pollution
-app.use(hpp());
 
 
 app.get('/', (req, res, next) => {
