@@ -31,19 +31,15 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.set('view engine', 'ejs');
 
 // Allow Cross-Origin requests
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
+const corsOptions = {
+  origin: '*', // Allow all origins
+  methods: 'PUT, POST, GET, DELETE, PATCH, OPTIONS', // Allowed methods
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization', // Allowed headers
+  credentials: true,
+  maxAge: 800,
+};
 
-  if (req.method === "OPTIONS") {
-    return res.status(200).send();
-  }
-  next();
-});
-
-
+app.use(cors(corsOptions));
 
 // Set security HTTP headers
 app.use(helmet());
@@ -54,9 +50,10 @@ app.use(mongoSanitize());
 // Data sanitization against XSS(clean user input from malicious HTML code)
 app.use(xss());
 
+app.use(hpp());
 
 app.get('/', (req, res, next) => {
-  res.send('Welcome to Pace!! Testing')
+  res.send('Welcome to Pace!!')
 });
 
 app.use('/uploads', express.static('uploads'));
@@ -86,6 +83,8 @@ app.use((req, res, next) => {
 });
 
 // error handler
+const mongoose = require('mongoose');
+
 app.use((error, req, res, next) => {
   if (req.file) {
     fs.unlink(req.file.path, err => {
@@ -104,12 +103,23 @@ app.use((error, req, res, next) => {
       success: false
     });
   }
+
+  // Check if the error is a Mongoose validation error
+  if (error instanceof mongoose.Error.ValidationError) {
+    const errorMessages = Object.values(error.errors).map(error => error.message);
+    return res.status(400).json({
+      message: `Validation error(s): ${errorMessages.join(', ')}`,
+      success: false
+    });
+  }
+
   if (res.headerSent) {
     return next(error);
   }
   console.error(error.stack);
-    res.status(error.code || 500);
-    res.json({message: error.message || 'Unknown Error!!', success: error.success});
+  res.status(error.code || 500);
+  res.json({ message: error.message || 'Unknown Error!!', success: error.success });
 });
+
 
 app.listen(config.PORT, () => console.log(` Nodejs Applications is listening on port ${config.PORT}!`));
