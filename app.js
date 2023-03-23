@@ -93,7 +93,7 @@ app.use((error, req, res, next) => {
   }
   if (error.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
-      message: 'File size is too large, should be less than 2MB',
+      message: 'File size is too large, should be less than 5MB',
       success: false
     });
   }
