@@ -25,7 +25,8 @@ console.log(`Node Environment is ${process.env.NODE_ENV}`);
 
 const app = express();
 app.use(express.json());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.set('view engine', 'ejs');
 
@@ -52,7 +53,6 @@ app.use(mongoSanitize());
 
 // Data sanitization against XSS(clean user input from malicious HTML code)
 app.use(xss());
-
 
 
 app.get('/', (req, res, next) => {
