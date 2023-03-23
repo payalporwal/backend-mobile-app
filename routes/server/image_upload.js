@@ -36,9 +36,9 @@ router.post("/upload", upload.single("images"), async (req, res, next) => {
         // save user
         await user.save();
         res.status(200).json({ message: "Image uploaded successfully", success: true, path});
-    } catch (err) {
-        console.log(err);
-        return next(new HttpError(err.message, false, 500));
+    } catch(error){
+        console.log(error);
+        return next(error);
     }
 });
 

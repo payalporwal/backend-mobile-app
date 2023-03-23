@@ -23,9 +23,9 @@ router.post('/create-slide', async (req, res, next) => {
         await slide.save();
         res.status(201).json({message: 'Saved Successfully', success: true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Could not Save!', false, 500));
+    catch(error){
+        console.log(error);
+        return next(error);
     }
 });
 
@@ -34,9 +34,9 @@ router.get('/get-slide', async (req, res, next) => {
     try{
         const slide = await Slide.find().select('slidedata slideno');
         res.status(200).json({slide: slide});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Could not Save!', false, 500));
+    } catch(error){
+        console.log(error);
+        return next(error);
     }
 }
 );

@@ -2,7 +2,7 @@ const fs = require('fs');
 const HttpError = require('../../utils/http-error');
 const userSchema = require('../../models/admin');
 const blogSchema = require('../../models/blog');
-
+const mongoose = require('mongoose');
 //upload content of blog
 exports.uploadblogs = async (req, res, next) => {
     try{
@@ -22,9 +22,9 @@ exports.uploadblogs = async (req, res, next) => {
         await blog.save();
         res.json({ message: 'New blog added' , success:true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -52,9 +52,9 @@ exports.updateblog = async (req, res, next) => {
         await blog.save();
         res.json({ message: 'Blog updated' , success:true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -71,9 +71,9 @@ exports.archiveblog = async (req, res, next) => {
         await blog.save();
         res.json({ message: 'Blog archived' , success:true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+   catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -85,9 +85,9 @@ exports.getallblogs = async (req, res, next) => {
             return res.json({ message: 'No Blogs Found!' , success:true});
         }
         res.json({ message: 'All blogs are here' , success:true, blogs});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -99,9 +99,9 @@ exports.getblogbyid =  async (req, res, next) => {
             return res.json({ message: 'This blog is no longer available' , success:true, blog});
         }
         res.json({ message: 'Blog is here' , success:true, blog});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -116,8 +116,8 @@ exports.getblogbycategory = async(req, res, next) =>{
             return res.json({ message: 'No Blogs Found!' , success:true});
         }
         res.json({ message: 'Blogs are here' , success:true, blogs});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }catch(error){
+        console.log(error);
+        return next(error);
     }
 };

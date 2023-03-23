@@ -9,9 +9,9 @@ router.get('/getall', async (req, res, next) => {
     try{
         const users = await userSchema.find().select({ username: 1, email: 1, role: 1});
         res.json({ message: 'All users are here' , success:true, users});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    } catch(error){
+        console.log(error);
+        return next(error);
     }
 });
 
