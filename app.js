@@ -30,14 +30,18 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 
 // Allow Cross-Origin requests
-const corsOptions = {
-  origin: '*', // Allow all origins
-  methods: 'PUT, POST, GET, DELETE, PATCH, OPTIONS', // Allowed methods
-  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization', // Allowed headers
-  maxAge: 800,
-};
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 
-app.use(cors(corsOptions));
+  if (req.method === "OPTIONS") {
+    return res.status(200).send();
+  }
+  next();
+});
+
 
 
 // Set security HTTP headers
