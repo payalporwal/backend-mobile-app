@@ -27,10 +27,7 @@ exports.getUserbyId = async (req, res, next) => {
             
             return next(error);
         }
-        const image = {
-            path: user.profile.path,
-            contentType: user.profile.contentType,
-        }
+       
         res.status(200).json({
             message: `Access as ${user.username}`,
             success: true,
@@ -40,7 +37,7 @@ exports.getUserbyId = async (req, res, next) => {
             phone: user.phone,
             age: user.age,
             gender: user.gender,
-            profile: image,
+            profile: user.profile,
             verified: user.verified,
             slideno: user.slideno,
             docComplete: user.completedDoc
