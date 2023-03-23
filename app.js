@@ -34,7 +34,6 @@ const corsOptions = {
   origin: '*', // Allow all origins
   methods: 'PUT, POST, GET, DELETE, PATCH, OPTIONS', // Allowed methods
   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization', // Allowed headers
-  credentials: true,
   maxAge: 800,
 };
 
