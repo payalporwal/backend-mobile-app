@@ -16,7 +16,6 @@ const adminRouter = require('./routes/admin/admin-routes');
 const blogRouter = require('./routes/admin/blog-routes');
 const docRouter = require('./routes/server/docs-route');
 const slideRouter = require('./routes/admin/create-slide');
-const imageupload = require('./routes/server/image_upload');
 const HttpError = require('./utils/http-error');
 const config =  require('./config.js');
 require('./database/db');
@@ -65,7 +64,7 @@ app.use('/api/users',authRouter);
 app.use('/api/web', [ authRouter, slideRouter]);
 
 //common
-app.use('/api/process',[processRouter, imageupload]);
+app.use('/api/process', processRouter);
 app.use('/api/healercall', callsRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);

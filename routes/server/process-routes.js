@@ -32,4 +32,7 @@ router.patch('/changePassword', [
     ], processControllers.changePassword
 );
 
+// upload image string 
+router.post('/upload', processControllers.uploadImage);
+
 module.exports = router;

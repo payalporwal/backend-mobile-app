@@ -207,3 +207,34 @@ exports.feedback = async (req, res, next) =>{
     
 };
 
+// image string upload with image type
+exports.uploadImage = async (req, res, next) => {
+    try{
+        const {type, imgdata, imgtype} = req.body;
+        if(!imgdata){
+            return next(new HttpError('Please upload a image', false, 422));
+        }
+        /*
+        const files = await cloudinary.uploader.upload(req.file.path);
+        const path = files.secure_url;*/
+        // find user
+        const user = await User.findById(req.user.id);
+        const image = {
+            contentType: imgtype,
+            path: imgdata
+        };
+        // check type
+        if(type === 'profile') {
+            user.profile = image;
+        } else if(type === 'verifydoc') {
+            user.verifydoc = image;
+        } else {
+            return next(new HttpError("Please provide valid 'type' of request", false, 422));
+        }
+        await user.save();
+        res.status(200).json({ message: "Image uploaded successfully", success: true, image});
+    } catch(error){
+        console.log(error);
+        return next(error);
+    }
+};
