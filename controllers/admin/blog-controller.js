@@ -2,42 +2,7 @@ const fs = require('fs');
 const HttpError = require('../../utils/http-error');
 const userSchema = require('../../models/admin');
 const blogSchema = require('../../models/blog');
-//const imageSchema = require('../../models/image');
-
-/* upload image separately
-exports.uploadimage = async (req, res, next) => {
-    try{
-        const user = await userSchema.findById(req.user.id);
-        const role = user.role;
-        if(!(role === 'admin' || role === 'content')){
-            return next(new HttpError('You are not authorized for this action', false, 401));
-        }
-        const file = req.file;
-        const filePath = file.path;
-        const fileMime = file.mimetype;
-        const fileSize = file.size;
-        const {name, alt} = req.body;
-        const image = new imageSchema({
-            name: name,
-            alt: alt,
-            size: fileSize,
-            image: {
-                data: fs.readFileSync(filePath),
-                contentType: fileMime,
-            },
-            path: `${config.https}://${config.HOST}:${config.PORT}/${filePath}`
-        });
-        const path = image.path;
-        await image.save();
-        res.json({ message: 'Image added' , success:true, path});
-    }   
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
-    }
-}; */
-
-
+const mongoose = require('mongoose');
 //upload content of blog
 exports.uploadblogs = async (req, res, next) => {
     try{
@@ -47,13 +12,6 @@ exports.uploadblogs = async (req, res, next) => {
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
         const {title, description, content, category, alt, imgdata, imgtype } = req.body;
-        /*
-        const image = images.map((image) => {
-            return {
-                name: image.name,
-                imageid: image.imageid
-            }
-        });*/
 
         const image = {
             alt: alt,
@@ -64,9 +22,9 @@ exports.uploadblogs = async (req, res, next) => {
         await blog.save();
         res.json({ message: 'New blog added' , success:true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -94,9 +52,9 @@ exports.updateblog = async (req, res, next) => {
         await blog.save();
         res.json({ message: 'Blog updated' , success:true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -113,9 +71,9 @@ exports.archiveblog = async (req, res, next) => {
         await blog.save();
         res.json({ message: 'Blog archived' , success:true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+   catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -127,9 +85,9 @@ exports.getallblogs = async (req, res, next) => {
             return res.json({ message: 'No Blogs Found!' , success:true});
         }
         res.json({ message: 'All blogs are here' , success:true, blogs});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -141,9 +99,9 @@ exports.getblogbyid =  async (req, res, next) => {
             return res.json({ message: 'This blog is no longer available' , success:true, blog});
         }
         res.json({ message: 'Blog is here' , success:true, blog});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }catch(error){
+        console.log(error);
+        return next(error);
     }
 };
 
@@ -158,8 +116,8 @@ exports.getblogbycategory = async(req, res, next) =>{
             return res.json({ message: 'No Blogs Found!' , success:true});
         }
         res.json({ message: 'Blogs are here' , success:true, blogs});
-    } catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    }catch(error){
+        console.log(error);
+        return next(error);
     }
 };

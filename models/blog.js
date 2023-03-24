@@ -6,11 +6,6 @@ const Schema = mongoose.Schema;
 
 const blogSchema = new Schema({
     title: { type: String, required: true },
-    /*
-    images: [{ 
-        name: { type: String, required: true },
-        image: {  type: mongoose.Schema.Types.ObjectId, ref: 'image'  }
-    }],*/
     images: {
         alt: { type: String, required:true},
         data: { type: String, required: true},

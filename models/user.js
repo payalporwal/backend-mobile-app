@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     phone: { type: Number },
     gender: { type: String, required: true },
     age: { type: Number, required: true },
-    slideno: { type: Number, default: 0 },
+    slideno: { type: Number, default: 1 },
     completedDoc: { type: Boolean, default: false},
     profile: {  contentType: String, path: String},
     verifydoc:{  contentType: String, path: String},

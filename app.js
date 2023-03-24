@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const fs = require('fs');
 const cors =  require('cors');
 const helmet = require('helmet');
@@ -16,7 +15,6 @@ const adminRouter = require('./routes/admin/admin-routes');
 const blogRouter = require('./routes/admin/blog-routes');
 const docRouter = require('./routes/server/docs-route');
 const slideRouter = require('./routes/admin/create-slide');
-const imageupload = require('./routes/server/image_upload');
 const HttpError = require('./utils/http-error');
 const config =  require('./config.js');
 require('./database/db');
@@ -24,13 +22,22 @@ require('./database/db');
 console.log(`Node Environment is ${process.env.NODE_ENV}`);
 
 const app = express();
-app.use(express.json());
-app.use(bodyParser.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 app.set('view engine', 'ejs');
 
 // Allow Cross-Origin requests
-app.use(cors());
+const corsOptions = {
+  origin: '*', // Allow all origins
+  methods: 'PUT, POST, GET, DELETE, PATCH, OPTIONS', // Allowed methods
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization', // Allowed headers
+  credentials: true,
+  maxAge: 800,
+};
+
+app.use(cors(corsOptions));
 
 // Set security HTTP headers
 app.use(helmet());
@@ -41,12 +48,10 @@ app.use(mongoSanitize());
 // Data sanitization against XSS(clean user input from malicious HTML code)
 app.use(xss());
 
-// Prevent parameter pollution
 app.use(hpp());
 
-
 app.get('/', (req, res, next) => {
-  res.send('Welcome to Pace!! Testing')
+  res.send('Welcome to Pace!!')
 });
 
 app.use('/uploads', express.static('uploads'));
@@ -58,7 +63,7 @@ app.use('/api/users',authRouter);
 app.use('/api/web', [ authRouter, slideRouter]);
 
 //common
-app.use('/api/process',[processRouter, imageupload]);
+app.use('/api/process', processRouter);
 app.use('/api/healercall', callsRouter);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);
@@ -76,6 +81,8 @@ app.use((req, res, next) => {
 });
 
 // error handler
+const mongoose = require('mongoose');
+
 app.use((error, req, res, next) => {
   if (req.file) {
     fs.unlink(req.file.path, err => {
@@ -84,7 +91,7 @@ app.use((error, req, res, next) => {
   }
   if (error.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
-      message: 'File size is too large, should be less than 2MB',
+      message: 'File size is too large, should be less than 5MB',
       success: false
     });
   }
@@ -94,11 +101,23 @@ app.use((error, req, res, next) => {
       success: false
     });
   }
+
+  // Check if the error is a Mongoose validation error
+  if (error instanceof mongoose.Error.ValidationError) {
+    const errorMessages = Object.values(error.errors).map(error => error.message);
+    return res.status(400).json({
+      message: `Validation error(s): ${errorMessages.join(', ')}`,
+      success: false
+    });
+  }
+
   if (res.headerSent) {
     return next(error);
   }
-    res.status(error.code || 500);
-    res.json({message: error.message || 'Unknown Error!!', success: error.success});
+  console.error(error.stack);
+  res.status(error.code || 500);
+  res.json({ message: error.message || 'Unknown Error!!', success: error.success });
 });
+
 
 app.listen(config.PORT, () => console.log(` Nodejs Applications is listening on port ${config.PORT}!`));

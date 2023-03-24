@@ -30,9 +30,9 @@ router.post('/skillset', checkAuth ,async (req, res, next) => {
             select: 'username age gender'
         });
         res.status(201).json({message: 'Saved Successfully', success: true});
-    } catch(err){
-        console.log(err);   
-        return next(new HttpError('Something went wrong, Could not Save!', false, 500));
+    } catch(error){
+        console.log(error);
+        return next(error);
     }
 });
 
@@ -55,8 +55,9 @@ router.post('/question',checkAuth, async (req, res, next) => {
         questions.questionaire = req.body.questionaire;
         await questions.save();
         return res.status(200).json({message: 'Saved Successfully', success: true});
-    } catch(err){
-        return next(new HttpError('Something went wrong, Could not Save!', false, 500));
+    } catch(error){
+        console.log(error);
+        return next(error);
     }
 });
 /*
@@ -107,9 +108,9 @@ router.get('/getall/assessment', async (req, res, next) => {
         }
         res.status(200).json({message: 'Assessments Here', success: true, assessment});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    catch(error){
+        console.log(error);
+        return next(error);
     }
 });
 
@@ -123,7 +124,7 @@ router.post('/pass/:id', checkAuth, async (req, res, next) => {
         }
         if(!assessment){
             return next(new HttpError('No assessment found!', false, 404));
-        }
+        } 
         if(field === 'skillset'){
             assessment.skillsetpass = result;
         }
@@ -136,9 +137,9 @@ router.post('/pass/:id', checkAuth, async (req, res, next) => {
         await assessment.save();
         res.status(200).json({message: 'Evaluation Done', success: true});
     }
-    catch(err){
-        console.log(err);
-        return next(new HttpError('Something went wrong, Try Again', false, 500));
+    catch(error){
+        console.log(error);
+        return next(error);
     }
 });
 
