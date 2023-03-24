@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const fs = require('fs');
 const cors =  require('cors');
 const helmet = require('helmet');
@@ -23,9 +22,9 @@ require('./database/db');
 console.log(`Node Environment is ${process.env.NODE_ENV}`);
 
 const app = express();
-app.use(express.json());
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 app.set('view engine', 'ejs');
 
