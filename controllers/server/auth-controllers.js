@@ -72,6 +72,15 @@ const login = async (req, res, next) => {
       const { email, password, devicetoken } = req.body;
 
       const existingUser = await User.findOne({ email: email });
+
+      if(!existingUser.otpverify){
+        const error = new HttpError(
+          'Email Unverified! Verify your email please',
+          false,
+          403
+        );
+        return next(error);
+      }
     
       if (!existingUser || !existingUser.active) {
         const error = new HttpError(

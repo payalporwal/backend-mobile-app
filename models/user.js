@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     profile: {  contentType: String, path: String},
     verifydoc:{  contentType: String, path: String},
     verified: { type:Boolean, default: false },
+    otpverify: { type:Boolean, default: false},
     devicetoken: { type: String },
     active: { type: Boolean, require: true, default: true },
     hearcalls: { type: mongoose.Types.ObjectId, ref: 'callSchedule'},

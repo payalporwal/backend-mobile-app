@@ -94,7 +94,11 @@ router.post('/verifyOtp', async (req, res, next) =>{
         }
 
         //verify type
-        
+        if(type === "Register" && otpdata.otptype === "Register"){
+            const user =  Users.findOne({email:email});
+            user.otpverify = true;
+            await user.save();  
+        }
         
         //comparing otp
         const valid = await bcrypt.compare(String(OTP), otpdata.otp);
