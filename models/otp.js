@@ -21,7 +21,7 @@ const OTPschema = new Schema({
 	createdAt: {
 		type: Date,
 		default: timeStamp,
-		expires: '5m', //5 min
+		expires: '10m', //10 min
 	},
 });
 

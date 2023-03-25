@@ -15,7 +15,7 @@ module.exports = async (email_message, email_subject, email ) => {
         
         //set email
         const mailOptions = {
-            from: `"No-Reply PACE"<${process.env.EMAIL_ADDRESS}>`,
+            from: `"PACE"<${process.env.EMAIL_ADDRESS}>`,
             to: `${email}`,
             subject: email_subject,
             text: email_message ,
