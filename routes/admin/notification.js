@@ -31,3 +31,5 @@ router.post('/send-notification-multiple', async (req, res) => {
     res.status(500).json({ message: 'Error sending notifications', error });
   }
 });
+
+module.exports = router;

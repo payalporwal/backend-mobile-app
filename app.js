@@ -15,6 +15,8 @@ const adminRouter = require('./routes/admin/admin-routes');
 const blogRouter = require('./routes/admin/blog-routes');
 const docRouter = require('./routes/server/docs-route');
 const slideRouter = require('./routes/admin/create-slide');
+const notiRouter = require('./routes/admin/notification');
+const funcRouter = require('./routes/admin/admin-functions');
 const HttpError = require('./utils/http-error');
 const config =  require('./config.js');
 require('./database/db');
@@ -70,7 +72,7 @@ app.use('/api/otp',otpRouter);
 app.use('/api/docs',docRouter);
 
 //admin
-app.use('/api/admin',adminRouter);
+app.use('/api/admin',[adminRouter, notiRouter, funcRouter]);
 app.use('/api/blog',blogRouter);
 
 
@@ -114,7 +116,6 @@ app.use((error, req, res, next) => {
   if (res.headerSent) {
     return next(error);
   }
-  console.error(error.stack);
   res.status(error.code || 500);
   res.json({ message: error.message || 'Unknown Error!!', success: error.success });
 });

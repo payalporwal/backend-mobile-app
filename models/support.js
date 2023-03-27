@@ -9,6 +9,7 @@ const supportRequests = new Schema({
 	username: { type: String, required: true },
     email: { type: String, required: true },
 	text: { type: String, required: true },
+	resolved: {type:Boolean, default: false },
 	createdAt: { type: Date, default: timeStamp },
 });
 

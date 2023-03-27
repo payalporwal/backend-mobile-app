@@ -36,6 +36,10 @@ router.post('/sendOtp', async (req, res, next) => {
             return next(new HttpError('No user found, Register instead!', false, 404));
         }
         
+        const existingotp = await OTPmodel.findOne({email: email});
+        if(existingotp){
+            return next(new HttpError('OTP already sent, check your mail', false, 400));
+        }
         //generating otp
         const OTP = otpfunc();
 
@@ -66,7 +70,7 @@ router.post('/sendOtp', async (req, res, next) => {
             return next(new HttpError('Invalid Request!', false, 400));
         }
 
-        await sendmail(email_message, email_subject, email);
+        await sendmail(email_message, email_subject, email, 'no-reply');
 
         res.status(201).json({
             message: 'OTP sent on Email!',
@@ -95,7 +99,6 @@ router.post('/verifyOtp', async (req, res, next) =>{
 
         //verify type
         
-        
         //comparing otp
         const valid = await bcrypt.compare(String(OTP), otpdata.otp);
         if(!valid) {
@@ -105,6 +108,11 @@ router.post('/verifyOtp', async (req, res, next) =>{
 
         //validate for email and otp
         if(email === otpdata.email && type === otpdata.otptype){
+            if(type === "Register" && otpdata.otptype === "Register"){
+                const user =  await User.findOne({email:email});
+                user.otpverify = true;
+                await user.save();  
+            }
             await otpdata.remove();
             res.status(200).json({
                 message: 'OTP Verification Successful!',
