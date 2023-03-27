@@ -36,6 +36,10 @@ router.post('/sendOtp', async (req, res, next) => {
             return next(new HttpError('No user found, Register instead!', false, 404));
         }
         
+        const existingotp = await OTPmodel.findOne({email: email});
+        if(existingotp){
+            return next(new HttpError('OTP already sent, check your mail', false, 400));
+        }
         //generating otp
         const OTP = otpfunc();
 
@@ -66,7 +70,7 @@ router.post('/sendOtp', async (req, res, next) => {
             return next(new HttpError('Invalid Request!', false, 400));
         }
 
-        await sendmail(email_message, email_subject, email);
+        await sendmail(email_message, email_subject, email, 'no-reply');
 
         res.status(201).json({
             message: 'OTP sent on Email!',

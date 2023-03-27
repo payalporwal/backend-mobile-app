@@ -5,7 +5,7 @@ const HttpError = require('./http-error');
 
 require('dotenv').config();
 
-module.exports = async (user) => {
+module.exports = async (user, next) => {
 	try {
 		const payload = { userId: user.id, email: user.email };
 		const accessToken = jwt.sign(
@@ -25,6 +25,6 @@ module.exports = async (user) => {
 		await new UserToken({ userId: user.id, token: refreshToken }).save();
 		return accessToken;
 	} catch (err) {
-		return next(new HttpError('Something went wrong, Token not created', false, 400));
+		throw new HttpError(err, false, 500);
 	}
 };

@@ -13,7 +13,7 @@ const blogSchema = new Schema({
     },
     description: { type: String, required: true },
     content: { type:String, required: true},
-    category: { type: String, required: true, enum:['anxiety', 'depression']},
+    category: { type: String, required: true, enum:['anxiety', 'depression', 'mental health', 'lifestyle']},
     archive : { type : Boolean, default: false },
    // keyword: {type:String, enum: ['Must Read']},
     createdAt : { type: Date, default : timeStamp },
