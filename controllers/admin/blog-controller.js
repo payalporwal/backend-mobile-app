@@ -3,6 +3,21 @@ const HttpError = require('../../utils/http-error');
 const userSchema = require('../../models/admin');
 const blogSchema = require('../../models/blog');
 const mongoose = require('mongoose');
+const cloudinary = require('../../middleware/cloudinary');
+
+// upload images 
+exports.uploadimages = async (req, res, next) => {
+    try{
+        const files = await cloudinary.uploader.upload(req.file.path);
+        const path = files.secure_url;
+        res.json({message: 'Image uploaded', success: true, path});
+    }
+    catch(error){
+        console.log(error);
+        return next(error);
+    }
+};
+
 //upload content of blog
 exports.uploadblogs = async (req, res, next) => {
     try{
