@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const HttpError = require('../http-error');
 require('dotenv').config();
 
-module.exports = async (email_message, email_subject, email, type, next ) => {
+module.exports = async (email_message, email_subject, email, type ) => {
     let email_address, email_password;
     if(type === 'support'){
         email_address = process.env.EMAIL_ADDRESS_SUPPORT,

@@ -9,7 +9,7 @@ router
     .post('/create', checkAuth, blogControllers.uploadblogs)
     .post('/update/:blogId', checkAuth, blogControllers.updateblog)
     .post('/archive/:blogId',checkAuth, blogControllers.archiveblog)
-    .post('/upload/image', upload.single('blogs'), checkAuth, blogControllers.uploadimages);
+    .post('/upload/image', upload.single('blogs'), blogControllers.uploadimages);
 
 
 //upload image
