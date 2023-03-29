@@ -33,4 +33,4 @@ jobs:
         echo "$PRIVATE_KEY" > private_key.pem
         chmod 600 private_key.pem
         rsync -avz -e 'ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' --exclude 'private_key.pem' . ubuntu@$SERVER_IP:backend-pace
-        ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$SERVER_IP "cd backend-pace && sudo apt install npm && npm ci && pm2 restart '$COMMAND'"
+        ssh -i private_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@$SERVER_IP "cd backend-pace && nvm install node && npm ci && pm2 restart '$COMMAND'"
