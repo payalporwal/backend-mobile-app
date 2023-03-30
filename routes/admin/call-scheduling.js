@@ -35,7 +35,7 @@ router.get('/get-all-call-slots', async (req, res, next) => {
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
 
-        const calls = await callmodel.find({ listenerUser: null }).select({date: 1, listenerUser: 1, strength: 1});
+        const calls = await callmodel.find({ listenerUser: null }).select({date: 1, talkerUser:1, listenerUser: 1, strength: 1});
         res.status(200).json({ message: 'All call slots are here' , success:true, calls});
     } catch(error){
         console.log(error);
@@ -53,9 +53,13 @@ router.post('/assign-listener/:id', async (req, res, next) => {
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
         const { email_message, email_subject, listenerid } = req.body;
-        const slot = await callmodel.findById(req.params.id);
+        const slot = await callmodel.findById(req.params.id).populate('talkerUser');
         if(!slot){
             const error = new HttpError('No call slot found', false, 404);
+            return next(error);
+        }
+        if(listenerid === slot.talkerUser.id){
+            const error = new HttpError('You cannot assign talker and listener as same person', false, 400);
             return next(error);
         }
         const listeneruser = await User.findById({ _id: listenerid, active:true});
