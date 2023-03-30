@@ -2,24 +2,25 @@ const router = require('express').Router();
 
 const HttpError = require('../../utils/http-error');
 const User = require('../../models/user');
+const adminUser =  require('../../models/admin');
 const callmodel = require('../../models/calls');
 const sendmail = require('../../utils/email/send');
 const checkAuth = require('../../middleware/check_auth');
-const sendmail = require('../../utils/email/send');
 
 
 router.use(checkAuth);
 // get all users who have completedDoc true
 router.get('/get-all-users', async (req, res, next) => {
-    let users;
     try {
-        users = await User.find({ completedDoc: true });
+        const user = await adminUser.findById(req.user.id);
+        const role = user.role;
+        if(!(role === 'admin' || role === 'support')){
+            return next(new HttpError('You are not authorized for this action', false, 401));
+        }
+        const users = await User.find({ completedDoc: true, verified: true, active:true }).select({username:1, email:1, age:1, gender:1, completedDoc:1, verified:1});
         res.status(200).json({ message: 'All Users are here' , success:true, users});
-    } catch (err) {
-        const error = new HttpError(
-        'Fetching users failed, please try again later.', false,
-        500
-        );
+    } catch(error){
+        console.log(error);
         return next(error);
     }
     }
@@ -27,13 +28,17 @@ router.get('/get-all-users', async (req, res, next) => {
 
 // all call slots where call model have listener user null
 router.get('/get-all-call-slots', async (req, res, next) => {
-    let calls;
     try {
-        calls = await callmodel.find({ listener: null });
+        const user = await adminUser.findById(req.user.id);
+        const role = user.role;
+        if(!(role === 'admin' || role === 'support')){
+            return next(new HttpError('You are not authorized for this action', false, 401));
+        }
 
+        const calls = await callmodel.find({ listenerUser: null }).select({date: 1, listenerUser: 1, strength: 1});
         res.status(200).json({ message: 'All call slots are here' , success:true, calls});
-    } catch (err) {
-        const error = new HttpError('Fetching calls failed, please try again later.', false, 500 );
+    } catch(error){
+        console.log(error);
         return next(error);
     }
     }
@@ -42,39 +47,33 @@ router.get('/get-all-call-slots', async (req, res, next) => {
 // assign listener user to a call slot by id
 router.post('/assign-listener/:id', async (req, res, next) => {
     try{
+        const user = await adminUser.findById(req.user.id);
+        const role = user.role;
+        if(!(role === 'admin' || role === 'support')){
+            return next(new HttpError('You are not authorized for this action', false, 401));
+        }
+        const { email_message, email_subject, listenerid } = req.body;
         const slot = await callmodel.findById(req.params.id);
         if(!slot){
             const error = new HttpError('No call slot found', false, 404);
             return next(error);
         }
-        const user = await User.findById(listenerid)
-        slot.listenerUser = user;
+        const listeneruser = await User.findById({ _id: listenerid, active:true});
+        slot.listenerUser = listeneruser;
         await slot.save();
-        slot.populate('listenerUser');
-        res.status(200).json({ message: 'Listener assigned to call slot' , success:true, slot});
-    }catch(err){
-        const error = new HttpError('Something went wrong', false, 500);
+        slot.populate({
+            path: 'talkerUser listenerUser',
+            select: 'username age gender'
+        });
+        const email = listeneruser.email;
+        await sendmail(email_message, email_subject, email, 'support');
+    
+        
+        res.status(200).json({ message: 'Listener assigned successfully' , success:true});
+    } catch(error){
+        console.log(error);
         return next(error);
     }
 });
 
-// send email to listener user
-router.post('/send-email/:id', async (req, res, next) => {
-    try{
-        const slot = await callmodel.findById(req.params.id);
-        if(!slot){
-            const error = new HttpError('No call slot found', false, 404);
-            return next(error);
-        }
-        const user = await User.findById(slot.listenerUser);
-        const email = user.email;
-        const name = slot.listenerUser.name;
-        const date = slot.date;
-        const time = slot.time;
-        const { email_message, email_subject } = req.body;
-        await sendmail(email_message, email_subject, email, type);
-        res.status(200).json({message: "Mail done", success: true});
-    } catch(error){
-        return next(error, error.status);
-    }
-});
+module.exports = router;

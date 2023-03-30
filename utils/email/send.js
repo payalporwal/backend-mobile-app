@@ -3,7 +3,7 @@ const HttpError = require('../http-error');
 require('dotenv').config();
 
 module.exports = async (email_message, email_subject, email, type ) => {
-    let email_address, email_password;
+    try {let email_address, email_password;
     if(type === 'support'){
         email_address = process.env.EMAIL_ADDRESS_SUPPORT,
         email_password = process.env.EMAIL_PASSWORD_SUPPORT
@@ -33,13 +33,10 @@ module.exports = async (email_message, email_subject, email, type ) => {
     };
     
     await transporter.verify();
-    
-    //send mail
-    transporter.sendMail(mailOptions, (err, response) => {
-        if (err) {
-            throw new HttpError(err, false, 500);
-        } else {
-            console.log("Server is ready to take our messages");
-        }
-    });
+    await transporter.sendMail(mailOptions);
+    console.log('Email Sent');
+    } catch (error){
+        console.log(error);
+        throw new HttpError(error, false, 500);
+    }
 }

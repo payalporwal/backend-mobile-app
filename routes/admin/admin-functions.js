@@ -94,7 +94,7 @@ router.post('/support/:id',  async (req, res, next) => {
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
         const { email_message, email_subject } = req.body;
-        const support = await supportRequest.findById(req.params.id, {resolved: false});
+        const support = await supportRequest.findById( { _id: req.params.id, resolved: false});
         if(!support){
             return next(new HttpError('No Request found!', false, 404));
         }
@@ -117,7 +117,7 @@ router.get('/getall/verify/user-documents',  async (req, res, next) => {
         if(!(role === 'admin')){
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
-        const verifydoc = await User.find({verifydoc: {$ne : null}}).select({username:1, verifydoc:1});
+        const verifydoc = await User.find({verifydoc: {$ne : null}, active: true}).select({username:1, verifydoc:1});
         if(!verifydoc){
             return next(new HttpError('No verifydoc found!', false, 404));
         }
@@ -138,7 +138,7 @@ router.post('/verify/user-documents/:id',  async (req, res, next) => {
             return next(new HttpError('You are not authorized for this action', false, 401));
         }
         const { review, email_message, email_subject } = req.body;
-        const verifydoc = await User.findById(req.params.id).select({username:1, verifydoc:1, email:1});
+        const verifydoc = await User.findById({ _id: req.params.id, active: true}).select({username:1, verifydoc:1, email:1});
         if(!verifydoc){
             return next(new HttpError('No verifydoc found!', false, 404));
         }
