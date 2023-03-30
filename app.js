@@ -11,6 +11,7 @@ const processRouter = require('./routes/server/process-routes');
 const tokenRouter = require('./routes/server/token-routes');
 const otpRouter = require('./routes/server/otp-route');
 const callsRouter = require('./routes/server/call-routes');
+const callAdminRouter = require('./routes/admin/call-scheduling');
 const adminRouter = require('./routes/admin/admin-routes');
 const blogRouter = require('./routes/admin/blog-routes');
 const docRouter = require('./routes/server/docs-route');
@@ -66,7 +67,7 @@ app.use('/api/web', [ authRouter, slideRouter]);
 
 //common
 app.use('/api/process', processRouter);
-app.use('/api/healercall', callsRouter);
+app.use('/api/healercall', [callsRouter, callAdminRouter]);
 app.use('/api/token',tokenRouter);
 app.use('/api/otp',otpRouter);
 app.use('/api/docs',docRouter);

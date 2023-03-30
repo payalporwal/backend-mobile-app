@@ -108,7 +108,7 @@ const gettalksideslots = async (req, res, next) => {
         const user = await User.findById(req.user.id);
         
         const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
-            path: 'talkerUser',
+            path: 'talkerUser listenerUser',
             select: 'username age gender'
         }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
 
@@ -128,7 +128,7 @@ const gethearsideslots = async (req, res, next) => {
         const user = await User.findById(req.user.id);
         
         const slots = await callSchema.find({listenerUser: user,  expire: false}).populate({
-            path: 'listenerUser',
+            path: 'talkerUser listenerUser',
             select: 'username age gender'
         }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
 
