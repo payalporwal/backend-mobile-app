@@ -1,5 +1,5 @@
 const router = require('express').Router();
-
+const upload = require('../../middleware/multer');
 const checkAuth = require('../../middleware/check_auth');
 const blogControllers = require('../../controllers/admin/blog-controller');
 
@@ -8,12 +8,14 @@ const blogControllers = require('../../controllers/admin/blog-controller');
 router
     .post('/create', checkAuth, blogControllers.uploadblogs)
     .post('/update/:blogId', checkAuth, blogControllers.updateblog)
-    .post('/archive/:blogId',checkAuth, blogControllers.archiveblog);
+    .post('/archive/:blogId',checkAuth, blogControllers.archiveblog)
+    .post('/upload/image', upload.single('blogs'), blogControllers.uploadimages);
+
 
 //upload image
-// router
-//     .post('/create',fileUpload.single('blogs'), checkAuth, blogControllers.uploadblogs)
 router
+    
+    router
     .get('/getall', blogControllers.getallblogs)
     .post('/get/category', blogControllers.getblogbycategory)
     .get('/get/:blogId', blogControllers.getblogbyid);
