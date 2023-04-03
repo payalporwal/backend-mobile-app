@@ -95,7 +95,7 @@ exports.archiveblog = async (req, res, next) => {
 // get all blogs
 exports.getallblogs = async (req, res, next) => {
     try{
-        const blogs = await blogSchema.find({archive: false}).select('title description content category images');
+        const blogs = await blogSchema.find({archive: false});
         if(blogs.length === 0){
             return res.json({ message: 'No Blogs Found!' , success:true});
         }
@@ -109,7 +109,7 @@ exports.getallblogs = async (req, res, next) => {
 // get blog by id
 exports.getblogbyid =  async (req, res, next) => {
     try{
-        const blog = await blogSchema.findById(req.params.blogId).select('title description content category images');
+        const blog = await blogSchema.findById(req.params.blogId);
         if(!blog || blog.archive){
             return res.json({ message: 'This blog is no longer available' , success:true, blog});
         }

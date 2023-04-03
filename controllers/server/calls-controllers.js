@@ -1,6 +1,5 @@
 const { validationResult } = require('express-validator');
 const {RtcTokenBuilder, RtcRole} = require('agora-access-token');
-
 const HttpError = require('../../utils/http-error');
 const User = require('../../models/user');
 const callSchema = require('../../models/calls');
@@ -102,16 +101,25 @@ const slotbook = async (req, res, next) => {
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 };
-
+const time = Date.now();
 const gettalksideslots = async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
         
-        const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
+        
+        const slots = await callSchema.findOne({talkerUser: user, expire: false}).populate({
             path: 'talkerUser listenerUser',
             select: 'username age gender'
         }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
-
+        
+        if(slots){
+            console.log(slots.date > time - 300);
+            if(slots.date < time - 300){
+                slots.expire = true;
+                await slots.save();
+                return next(new HttpError('Call expired already!', false, 400));
+            }
+        }
         res.json({
             message: 'Your Slots',
             success: true,
@@ -127,11 +135,19 @@ const gethearsideslots = async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
         
-        const slots = await callSchema.find({listenerUser: user,  expire: false}).populate({
+        const slots = await callSchema.findOne({listenerUser: user,  expire: false}).populate({
             path: 'talkerUser listenerUser',
             select: 'username age gender'
         }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
 
+        if(slots){
+            console.log(slots.date > time - 300);
+            if(slots.date < time - 300){
+                slots.expire = true;
+                await slots.save();
+                return next(new HttpError('Call expired already!', false, 400));
+            }
+        }
         res.json({
             message: 'Your Slots',
             success: true,
