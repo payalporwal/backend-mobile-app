@@ -227,6 +227,9 @@ exports.uploadImage = async (req, res, next) => {
         if(type === 'profile') {
             user.profile = image;
         } else if(type === 'verifydoc') {
+            if(user.verifydoc !== null ){
+                return next(new HttpError("Documents already uploaded, wait for review!", false, 422));
+            }
             user.verifydoc = image;
         } else {
             return next(new HttpError("Please provide valid 'type' of request", false, 422));
