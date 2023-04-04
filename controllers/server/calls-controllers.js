@@ -110,7 +110,7 @@ const gettalksideslots = async (req, res, next) => {
         const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
             path: 'talkerUser listenerUser',
             select: 'username age gender'
-        }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
+        }).select({date: 1, note:1, strength:1,  talkerUser:1, listenerUser:1});
         
         if(slots){
             console.log(slots.date > time - 300);
@@ -138,7 +138,7 @@ const gethearsideslots = async (req, res, next) => {
         const slots = await callSchema.find({listenerUser: user,  expire: false}).populate({
             path: 'talkerUser listenerUser',
             select: 'username age gender'
-        }).select({date: 1, note:1, talkerUser:1, listenerUser:1});
+        }).select({date: 1, note:1, strength:1, talkerUser:1, listenerUser:1});
 
         if(slots){
             console.log(slots.date > time - 300);

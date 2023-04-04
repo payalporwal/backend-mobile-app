@@ -11,7 +11,7 @@ const scheduleCall = new Schema({
     strength: { type: Number, required: true },
     note: { type: String, required: true },
     talkerUser: {type: mongoose.Types.ObjectId, ref: 'User'},
-    listenerUser: {type: mongoose.Types.ObjectId, ref: 'User'}, 
+    listenerUser: {type: mongoose.Types.ObjectId, default: null, ref: 'User'}, 
     agoraToken: { type: String, default: null },
     expire: { type: Boolean, default: false },
     createdAt : { type: Date, default : timeStamp },
