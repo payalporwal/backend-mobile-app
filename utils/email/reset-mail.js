@@ -5,10 +5,10 @@ const message = (otp, username) =>{
 
 🎉 Thank you for signing up for the Pace App! 🎉
 
-Your one-time password (OTP) is: ${otp}
+Your one-time password (OTP) is: ${otp}. It will expire in 5 minutes.
 
-Please enter this OTP in the required field on the registration page to complete your registration and start using the app 💻
-If you have any trouble using the OTP, please don't hesitate to contact us for assistance 🤗 We're here to help!
+If you didn't request for a resetting password. Do not share OTP, it will not change your password.
+Reach out to our us at 'support@paceful.org' in any case of trouble.
 
 Take care,\n
 — 
