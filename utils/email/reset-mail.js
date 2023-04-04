@@ -3,8 +3,6 @@ const subject_mail = "OTP: For Resetting Password"
 const message = (otp, username) =>{
     return `Hi ${username},
 
-🎉 Thank you for signing up for the Pace App! 🎉
-
 Your one-time password (OTP) is: ${otp}. It will expire in 5 minutes.
 
 If you didn't request for a resetting password. Do not share OTP, it will not change your password.
