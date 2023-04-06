@@ -17,7 +17,7 @@ const nocache = (req, res, next) => {
 
 router.get('/talkslots', callControllers.gettalksideslots);
 
-router.get('/hearslots', callControllers.gethearsideslots);
+//router.get('/hearslots', callControllers.gethearsideslots);
 
 router.post('/slotbook', [check('strength').isNumeric(), check('date').isNumeric(), check('note').notEmpty()], callControllers.slotbook);
 
