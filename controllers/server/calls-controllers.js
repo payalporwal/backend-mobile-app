@@ -106,31 +106,47 @@ const gettalksideslots = async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
         
-        
-        const slots = await callSchema.find({talkerUser: user, expire: false}).populate({
+        const talker = await callSchema.find({talkerUser: user, expire: false}).populate({
             path: 'talkerUser listenerUser',
             select: 'username age gender'
         }).select({date: 1, note:1, strength:1,  talkerUser:1, listenerUser:1});
+
+        const listener = await callSchema.find({listenerUser: user,  expire: false}).populate({
+            path: 'talkerUser listenerUser',
+            select: 'username age gender'
+        }).select({date: 1, note:1, strength:1, talkerUser:1, listenerUser:1});
+
+        let text, slot;
+        if(talker.length !== 0){
+            text = 'You are Talker!';
+            slot = talker;
+        } else if(listener.length !== 0){
+            text = 'You are Listener!';
+            slot = listener;
+        } else {
+            text = 'You do not have any slot!';
+            slot = [];
+        }
         
-        if(slots){
-            console.log(slots.date > time - 300);
-            if(slots.date < time - 300){
-                slots.expire = true;
-                await slots.save();
+        if(slot.length !== 0){
+            console.log(slot.date > time - 300);
+            if(slot.date < time - 300){
+                slot.expire = true;
+                await slot.save();
                 return next(new HttpError('Call expired already!', false, 400));
             }
         }
         res.json({
-            message: 'Your Slots',
+            message: text,
             success: true,
-            slots
+            slot
         });
     } catch (err) {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
 };
-
+/*
 const gethearsideslots = async (req, res, next) => {
     try{
         const user = await User.findById(req.user.id);
@@ -157,7 +173,7 @@ const gethearsideslots = async (req, res, next) => {
         console.log(err);
         return next(new HttpError('Something went wrong, Try Again', false, 500));
     }
-};
+};*/
 
 const cuttingCall = async(req, res, next ) => {
     try{
@@ -174,5 +190,5 @@ const cuttingCall = async(req, res, next ) => {
 exports.getCallToken = getCallToken;
 exports.slotbook = slotbook;
 exports.gettalksideslots = gettalksideslots;
-exports.gethearsideslots = gethearsideslots;
+//exports.gethearsideslots = gethearsideslots;
 exports.cuttingCall = cuttingCall;
